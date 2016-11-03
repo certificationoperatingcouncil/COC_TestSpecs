@@ -1,7 +1,7 @@
 # Certification Operating Council 
 ## Test Specifications
 
-Release Date: April 4, 2016
+Release Date: Nov 3, 2016
 
 ----------
 
@@ -27,6 +27,10 @@ Test Suite Structure and Test Purposes for Security Services (IEEE 1609.2)
 
 Test Suite Structure and Test Purposes for J2945.1
 
+**Plugfest Test Cases**
+
+Plugfest Interoperability Test Cases
+
 **Test Control Interface**
 
 The latest test specification and ASN.1 is posted in [https://github.com/certificationoperatingcouncil/TCI_ASN1](https://github.com/certificationoperatingcouncil/TCI_ASN1)
@@ -39,4 +43,5 @@ Return the comment sheet to the Certification Operating Council at certification
 
 
 ### History
+November 3, 2016 - COC Test Specifications - updates release 
 April 4, 2016 - COC Test Specifications - initial release 
