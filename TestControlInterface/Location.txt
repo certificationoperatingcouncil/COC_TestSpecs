@@ -1,0 +1,3 @@
+The latest Test Control Specification is located at 
+
+https://github.com/certificationoperatingcouncil/TCI_ASN1/releases
