@@ -31,6 +31,12 @@ Test Suite Structure and Test Purposes for J2945.1
 
 Plugfest Interoperability Test Cases
 
+**Device Profiles & Minimum Device Test Requirements**
+
+Minimum requirements for implementation-under-test (i.e. devices submitted for testing)
+
+Device profiles and corresponding mandatory test requirements
+
 **Test Control Interface**
 
 The latest TCI specification and ASN.1 is posted in [https://github.com/certificationoperatingcouncil/TCI_ASN1/releases](https://github.com/certificationoperatingcouncil/TCI_ASN1/releases)
@@ -45,8 +51,14 @@ Comment sheet is to record user comments or questions.
 
 Return the comment sheet to the Certification Operating Council at certificationoperatingcouncil - @ - gmail.com  
 
+**Plugfest Privacy Statement**
+
+Privacy statement for plugfest participants
+
 
 ### History
+November 4, 2016 - Added privacy statement, link to TCI, device profiles 
+
 November 3, 2016 - COC Test Specifications - updates release 
 
 April 4, 2016 - COC Test Specifications - initial release 
