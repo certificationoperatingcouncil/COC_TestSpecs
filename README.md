@@ -31,6 +31,10 @@ Test Suite Structure and Test Purposes for J2945.1
 
 Test Suite Structure and Test Purposes for  V2I
 
+**Plugtest**
+
+Documents specific to plugfests
+
 **Plugfest Test Cases**
 
 Plugfest Interoperability Test Cases
@@ -61,8 +65,13 @@ Privacy statement for plugfest participants
 
 
 ### History
-April 19, 2017  - Added WAVEV2I test specification (word and pdf versions) 
-                - Created Plugfest & subfolder for Plugfest specific docs. 
+April 21, 2017  
+- Added modified 29451 test specs  [link](https://github.com/certificationoperatingcouncil/COC_TestSpecs/tree/master/SAEJ29451)
+- Added 29451 test matrix for the plugtest [link](https://github.com/certificationoperatingcouncil/COC_TestSpecs/tree/master/Plugfest/May%202017)
+
+April 19, 2017  
+- Added WAVEV2I test specification (word and pdf versions)  
+- Created Plugfest & subfolder for Plugfest specific docs
 
 November 4, 2016 - Added privacy statement, link to TCI, device profiles 
 
