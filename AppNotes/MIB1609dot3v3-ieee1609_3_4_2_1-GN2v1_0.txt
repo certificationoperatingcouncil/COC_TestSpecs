@@ -1,0 +1,2044 @@
+-- ********************************************************************
+-- * IEEE P1609.3 Management Information Base
+-- ********************************************************************
+IEEE1609dot3-MIB DEFINITIONS ::= BEGIN
+IMPORTS
+ MODULE-IDENTITY, OBJECT-TYPE, Integer32, Unsigned32 FROM SNMPv2-SMI
+ MacAddress, TruthValue FROM SNMPv2-TC
+ Ipv6Address, Ipv6AddressPrefix FROM IPV6-TC
+ MODULE-COMPLIANCE, OBJECT-GROUP FROM SNMPv2-CONF;
+
+-- ********************************************************************
+-- * MODULE IDENTITY
+-- ********************************************************************
+ieee1609dot3v3mib MODULE-IDENTITY
+LAST-UPDATED "201604250000Z"
+ORGANIZATION "IEEE P1609"
+CONTACT-INFO
+"WG E-mail: stds-p1609@ieee.org
+Chair: Thomas M Kurihara
+Postal: 3800 Fairfax Drive, #207
+Arlington, VA USA 22203-1759
+Tel: +1 703-516-9650
+Fax: +1 703-516-4688
+E-mail: tkstds@mindspring.com
+Editor: Kevin S. Smith"
+DESCRIPTION
+"The MIB module for IEEE 1609.3v3 full use entities.
+iso(1) iso-identified-organization(3) ieee(111)
+standards-association-numbered-series-standards(2) wave-stds(1609) 
+dot3(3) wmemib(4) major-version-2(2) minor-version-1 (1)"
+REVISION "201604250000Z"
+DESCRIPTION 
+"Consistent with 1609.3v3 standard."
+::= { ieee1609 3 4 2 1}
+ieee1609 OBJECT IDENTIFIER ::= 
+{1 iso-identified-organization (3) ieee (111) 
+standards-association-numbered-series-standards (2) 1609}
+
+-- ********************************************************************
+-- This MIB includes general info, as well as info relevant to the 
+-- provider role and user role.
+-- General info:
+--  Implementation capabilities information
+--  Local info
+--  Channel service request info 
+--  WSM service request info
+-- Provider info:
+--  Provider service request info
+--  Channel info
+--  WAVE routing advertisement (IPv6 configuration) info
+-- User info:
+--  Available service info
+--  User service request info
+-- Conformance groups
+
+dot3generalInfo OBJECT IDENTIFIER ::= { ieee1609dot3v3mib 1 }
+dot3providerInfo OBJECT IDENTIFIER ::= { ieee1609dot3v3mib 2 }
+dot3userInfo OBJECT IDENTIFIER ::= { ieee1609dot3v3mib 3 }
+dot3conformance OBJECT IDENTIFIER ::= { ieee1609dot3v3mib 4 }
+
+
+-- ********************************************************************
+-- ********************************************************************
+-- * General Device Information 
+-- ********************************************************************
+-- ********************************************************************
+
+-- ********************************************************************
+-- * Device Capabilities Information
+-- ********************************************************************
+
+dot3StationConfigTable OBJECT-TYPE
+SYNTAX SEQUENCE OF Dot3StationConfigEntry
+MAX-ACCESS not-accessible
+STATUS current
+DESCRIPTION
+"Station Configuration attributes pertinent to Networking Services.
+In tabular form to allow for multiple instances on an agent."
+::= { dot3generalInfo 1 }
+
+dot3StationConfigEntry OBJECT-TYPE
+SYNTAX Dot3StationConfigEntry
+MAX-ACCESS not-accessible
+STATUS current
+DESCRIPTION
+	"An entry in the dot3StationConfigTable. Each entry 
+	corresponds to one of multiple IEEE 802.11 interfaces
+	(if present)."
+INDEX { dot3StationConfigIndex }
+::= { dot3StationConfigTable 1 }
+
+Dot3StationConfigEntry ::=
+SEQUENCE {
+	dot3StationConfigIndex INTEGER,
+	dot3CchAccessImplemented TruthValue,
+	dot3SchAccessImplemented TruthValue,
+	dot3IpV6Implemented TruthValue,
+	dot3UdpImplemented TruthValue,
+	dot3TcpImplemented TruthValue,
+	dot3WsmpImplemented TruthValue,
+	dot3UserRoleImplemented TruthValue,
+	dot3ProviderRoleImplemented TruthValue,
+	dot3TimingAdvertisementServiceImplemented TruthValue
+	}
+
+dot3StationConfigIndex OBJECT-TYPE
+SYNTAX INTEGER (1..32)
+MAX-ACCESS not-accessible
+STATUS current
+DESCRIPTION
+"Index to the Station Config Table."
+::= { dot3StationConfigEntry 1 }
+
+dot3CchAccessImplemented OBJECT-TYPE
+SYNTAX TruthValue
+MAX-ACCESS read-only
+STATUS current
+DESCRIPTION
+	"Indicates whether the device supports operation on the 
+	control channel." 
+::= { dot3StationConfigEntry 2 }
+
+dot3SchAccessImplemented OBJECT-TYPE
+SYNTAX TruthValue
+MAX-ACCESS read-only
+STATUS current
+DESCRIPTION
+	"Indicates whether the device supports operation on any 
+	service channel." 
+::= { dot3StationConfigEntry 3 }
+
+dot3IpV6Implemented OBJECT-TYPE
+SYNTAX TruthValue
+MAX-ACCESS read-only
+STATUS current
+DESCRIPTION
+	"Indicates whether the device supports IPv6 data exchange."
+::= { dot3StationConfigEntry 4 }
+
+dot3UdpImplemented OBJECT-TYPE
+SYNTAX TruthValue
+MAX-ACCESS read-only
+STATUS current
+DESCRIPTION
+	"Indicates whether the device supports the User Datagram 
+	Protocol."
+::= { dot3StationConfigEntry 5 }
+
+dot3TcpImplemented OBJECT-TYPE
+SYNTAX TruthValue
+MAX-ACCESS read-only
+STATUS current
+DESCRIPTION
+	"Indicates whether the device supports the Transmission 
+	Control Protocol."
+::= { dot3StationConfigEntry 6 }
+
+dot3WsmpImplemented OBJECT-TYPE
+SYNTAX TruthValue
+MAX-ACCESS read-only
+STATUS current
+DESCRIPTION
+	"Indicates whether the device supports the WAVE Short
+	Message Protocol."
+::= { dot3StationConfigEntry 7 }
+
+dot3UserRoleImplemented OBJECT-TYPE
+SYNTAX TruthValue
+MAX-ACCESS read-only
+STATUS current
+DESCRIPTION
+	"Indicates whether the device implements the User role."
+::= { dot3StationConfigEntry 8 }
+
+dot3ProviderRoleImplemented OBJECT-TYPE
+SYNTAX TruthValue
+MAX-ACCESS read-only
+STATUS current
+DESCRIPTION
+	"Indicates whether the device implements the Provider role."
+::= { dot3StationConfigEntry 9 }
+
+dot3TimingAdvertisementServiceImplemented OBJECT-TYPE
+SYNTAX TruthValue
+MAX-ACCESS read-only
+STATUS current
+DESCRIPTION
+	"Indicates whether the device supports the generation of
+	Timing Advertisement frames at the request of higher layers."
+::= { dot3StationConfigEntry 10 }
+
+
+-- ********************************************************************
+-- * End Device Capabilities Information
+-- ********************************************************************
+
+-- ********************************************************************
+-- * WAVE Local Device Information 
+-- ********************************************************************
+
+-- WAVE Local Device Information 
+dot3LocalInfo OBJECT IDENTIFIER ::= { dot3generalInfo 2}
+-- DEFINED AS "Parameters controlling local device operation";
+	
+dot3NumberOfChannelsSupported OBJECT-TYPE
+	SYNTAX INTEGER (1..126)
+	MAX-ACCESS read-write
+	STATUS current 
+	DESCRIPTION
+	"The number of radio channels that may be simultaneously
+	accessed by the device."
+::= { dot3LocalInfo 1 }
+
+dot3AdvertiserIdentifier OBJECT-TYPE
+	SYNTAX OCTET STRING (SIZE(0..32))
+	MAX-ACCESS read-write
+	STATUS current 
+	DESCRIPTION
+	"A text string optionally sent in the WSA identifying
+	the service provider device."
+::= { dot3LocalInfo 2 }
+
+dot3RegistrationPort OBJECT-TYPE
+	SYNTAX INTEGER
+	MAX-ACCESS read-write
+	STATUS current 
+	DESCRIPTION
+	"UDP port number used for registration of external 
+	applications."
+::= { dot3LocalInfo 3 }
+
+dot3WsmMaxLength OBJECT-TYPE
+	SYNTAX INTEGER (1..2302)
+	MAX-ACCESS read-write
+	STATUS current 
+	DESCRIPTION
+	"Maximum size in octets of the variable length portion 
+of a WSM, including data.
+	The default value is 1400. Max value is 
+	802.11 MAC MSDU size minus EtherType size (2304 minus 	2 = 2302)."
+::= { dot3LocalInfo 4 }
+
+-- ********************************************************************
+-- * END WAVE General Device Information 
+-- ********************************************************************
+
+-- ********************************************************************
+-- * WAVE Channel Service Request Table
+-- ********************************************************************
+
+-- WAVE Channel Service Request Table
+-- DEFINED AS "Parameters populated by a channel service request";
+	
+dot3ChannelServiceRequestTable OBJECT-TYPE
+	SYNTAX SEQUENCE OF Dot3ChannelServiceRequestTableEntry
+	MAX-ACCESS not-accessible
+	STATUS current
+	DESCRIPTION
+	"Channel Service Request Table."
+::= { dot3generalInfo 3}
+
+dot3ChannelServiceRequestTableEntry OBJECT-TYPE
+	SYNTAX Dot3ChannelServiceRequestTableEntry
+	MAX-ACCESS not-accessible
+	STATUS current
+	DESCRIPTION
+	"Requests for channel service."
+	INDEX {dot3ChannelServiceRequestTableIndex}
+::= { dot3ChannelServiceRequestTable 1}
+
+Dot3ChannelServiceRequestTableEntry ::= SEQUENCE {
+	dot3ChannelServiceRequestTableIndex INTEGER,
+	dot3ChannelServiceRequestChannelIdentifier INTEGER,
+	dot3ChannelServiceRequestTimeSlot INTEGER,
+	dot3ChannelServiceRequestStatus INTEGER}
+	
+dot3ChannelServiceRequestTableIndex OBJECT-TYPE
+	SYNTAX INTEGER (0..127)
+	MAX-ACCESS not-accessible
+	STATUS current 
+	DESCRIPTION
+	"Table index."
+::= { dot3ChannelServiceRequestTableEntry 1 } 
+
+dot3ChannelServiceRequestChannelIdentifier OBJECT-TYPE
+    SYNTAX INTEGER (0..200)	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Requested channel identifier, as defined in IEEE 802.11."
+::= { dot3ChannelServiceRequestTableEntry 2 }
+
+dot3ChannelServiceRequestTimeSlot OBJECT-TYPE
+    SYNTAX INTEGER {
+		timeSlot0 (1), 
+		timeSlot1 (2),
+		both (3)
+        }	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Time slot(s) to which the request applies."
+::= { dot3ChannelServiceRequestTableEntry 3 }
+
+dot3ChannelServiceRequestStatus OBJECT-TYPE
+    SYNTAX INTEGER {
+		pending (0),
+		satisfied (1), 
+		partiallySatisfied (2)
+        }	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Current status of the request."
+::= { dot3ChannelServiceRequestTableEntry 4 }
+
+-- ********************************************************************
+-- * END WAVE Channel Service Request Table
+-- ********************************************************************
+-- ********************************************************************
+-- * WSM Service Request Table
+-- ********************************************************************
+-- WSM Service Request Table
+-- DEFINED AS "Parameters populated by a WAVE Short Message service request";
+	
+dot3WsmServiceRequestTable OBJECT-TYPE
+	SYNTAX SEQUENCE OF Dot3WsmServiceRequestTableEntry
+	MAX-ACCESS not-accessible
+	STATUS current
+	DESCRIPTION
+	"WSM Service Request Table."
+::= { dot3generalInfo 4}
+
+dot3WsmServiceRequestTableEntry OBJECT-TYPE
+	SYNTAX Dot3WsmServiceRequestTableEntry
+	MAX-ACCESS not-accessible
+	STATUS current
+	DESCRIPTION
+	"Requests for WSM service."
+	INDEX {dot3WsmServiceRequestTableIndex}
+::= { dot3WsmServiceRequestTable 1}
+
+Dot3WsmServiceRequestTableEntry ::= SEQUENCE {
+	dot3WsmServiceRequestTableIndex INTEGER,
+	dot3WsmServiceRequestPsid OCTET STRING}
+	
+dot3WsmServiceRequestTableIndex OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS not-accessible
+	STATUS current 
+	DESCRIPTION
+	"Table index."
+::= { dot3WsmServiceRequestTableEntry 1 }
+
+dot3WsmServiceRequestPsid OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(1..8)) 	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Provider Service Identifier to be internally routed
+	on receipt."
+::= { dot3WsmServiceRequestTableEntry 2 }
+
+-- ********************************************************************
+-- * END WSM Service Request Table
+-- ********************************************************************
+
+-- ********************************************************************
+-- ********************************************************************
+-- * END General Device Information 
+-- ********************************************************************
+-- ********************************************************************
+
+-- ********************************************************************
+-- ********************************************************************
+-- * Provider Information 
+--	- Provider Service Request Table
+--	- Provider Channel Info Table
+--	- Provider WAVE Routing Advertisement Table
+-- **********************************************************************
+-- ********************************************************************
+
+-- ********************************************************************
+-- * Provider Service Request Table
+-- ********************************************************************
+-- WAVE Provider Service Request Table
+-- DEFINED AS "Parameters populated by a provider service request";
+	
+dot3ProviderServiceRequestTable OBJECT-TYPE
+	SYNTAX SEQUENCE OF Dot3ProviderServiceRequestTableEntry
+	MAX-ACCESS not-accessible
+	STATUS current
+	DESCRIPTION
+	"Provider Service Request Table."
+::= { dot3providerInfo 1}
+
+dot3ProviderServiceRequestTableEntry OBJECT-TYPE
+	SYNTAX Dot3ProviderServiceRequestTableEntry
+	MAX-ACCESS not-accessible
+	STATUS current
+	DESCRIPTION
+	"Requests for provider services."
+	INDEX {dot3ProviderServiceRequestTableIndex}
+::= { dot3ProviderServiceRequestTable 1}
+
+Dot3ProviderServiceRequestTableEntry ::= SEQUENCE {
+	dot3ProviderServiceRequestTableIndex INTEGER,
+	dot3WsaType INTEGER,
+	dot3ProviderServiceIdentifier OCTET STRING,
+	dot3ProviderServiceContext OCTET STRING,
+	dot3ProviderChannelAccess INTEGER, 
+	dot3ProviderBestAvailable TruthValue,
+	dot3ProviderOperatingClass INTEGER,
+	dot3ProviderServiceChannelNumber INTEGER,
+	dot3ProviderWsaChannelNumber INTEGER,
+	dot3ProviderRepeatRate INTEGER,
+	dot3ProviderIpService TruthValue,
+	dot3ProviderIpv6Address Ipv6Address,
+	dot3ProviderMacAddress MacAddress,
+	dot3ProviderServicePort INTEGER,
+	dot3ProviderRcpiThreshold INTEGER,
+	dot3ProviderWsaCountThreshold INTEGER,
+	dot3ProviderWsaCountThresholdInterval INTEGER,
+	dot3ProviderServiceStatus INTEGER
+	}
+	
+dot3ProviderServiceRequestTableIndex OBJECT-TYPE
+	SYNTAX INTEGER (0..127)
+	MAX-ACCESS not-accessible
+	STATUS current 
+	DESCRIPTION
+	"Table index."
+::= { dot3ProviderServiceRequestTableEntry 1 }
+
+dot3WsaType OBJECT-TYPE
+    SYNTAX INTEGER {
+		securedWsa (1), 
+		unsecuredWsa (2)
+        }	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Security processing to be applied to the transmitted WSA."
+::= { dot3ProviderServiceRequestTableEntry 2 }
+
+dot3ProviderServiceIdentifier OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(1..8)) 	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"PSID associated with the request."
+::= { dot3ProviderServiceRequestTableEntry 3 }
+
+dot3ProviderServiceContext OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..31))	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"PSC info provided by the requester."
+::= { dot3ProviderServiceRequestTableEntry 4 }
+
+dot3ProviderChannelAccess OBJECT-TYPE
+    SYNTAX INTEGER {
+		continuous (0), 
+		alternatingTimeslot1Only (1),
+		alternatingTimeslot0Only (2)
+        }	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Access type associated with the request."
+::= { dot3ProviderServiceRequestTableEntry 5 }
+
+dot3ProviderBestAvailable OBJECT-TYPE
+    SYNTAX TruthValue	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"When true, indicates the best available service channel 
+	should be used;
+	when false indicates the dot3ProviderServiceChannelNumber 
+	should be used."
+::= { dot3ProviderServiceRequestTableEntry 6 }
+
+dot3ProviderOperatingClass OBJECT-TYPE
+    SYNTAX INTEGER 
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Operating class of the associated service channel, 
+	as defined in IEEE Std 802.11."
+::= { dot3ProviderServiceRequestTableEntry 7 }
+
+dot3ProviderServiceChannelNumber OBJECT-TYPE
+    SYNTAX INTEGER (0..200)	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Indicate a requested service channel number, 
+	as defined in IEEE 802.11. "
+::= { dot3ProviderServiceRequestTableEntry 8 }
+
+dot3ProviderWsaChannelNumber OBJECT-TYPE
+    SYNTAX INTEGER (0..200)	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Indicate a requested service or control channel number 
+	on which to transmit WSAs, as defined in IEEE 802.11. "
+::= { dot3ProviderServiceRequestTableEntry 9 }
+
+dot3ProviderRepeatRate OBJECT-TYPE
+    SYNTAX INTEGER (0..255)	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Number of WSAs to be transmitted each 5 seconds."
+::= { dot3ProviderServiceRequestTableEntry 10 }
+
+dot3ProviderIpService OBJECT-TYPE
+    SYNTAX TruthValue	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Indicates whether or not the requested service supports
+	IP traffic."
+::= { dot3ProviderServiceRequestTableEntry 11 }
+
+dot3ProviderIpv6Address OBJECT-TYPE
+    SYNTAX Ipv6Address	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"IP address of the server associated with the requested 
+	service."
+::= { dot3ProviderServiceRequestTableEntry 12 }
+
+dot3ProviderMacAddress OBJECT-TYPE
+    SYNTAX MacAddress	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"MAC address of the server associated with the requested 
+	service if different from the transmitting device."
+::= { dot3ProviderServiceRequestTableEntry 13 }
+
+dot3ProviderServicePort OBJECT-TYPE
+    SYNTAX INTEGER 	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Transport layer port number associated with the requested 
+	service."
+::= { dot3ProviderServiceRequestTableEntry 14 }
+
+dot3ProviderRcpiThreshold OBJECT-TYPE
+    SYNTAX INTEGER (0..255)	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"The recommended power of received WSAs for accepting the
+	advertised service. 
+ 	Coded per IEEE Std 802.11-2012/18.3.10."
+::= { dot3ProviderServiceRequestTableEntry 15 }
+
+dot3ProviderWsaCountThreshold OBJECT-TYPE
+    SYNTAX INTEGER (0..255)	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"The recommended number of received WSAs before 
+accepting the advertised service."
+::= { dot3ProviderServiceRequestTableEntry 16 }
+
+dot3ProviderWsaCountThresholdInterval OBJECT-TYPE
+    SYNTAX INTEGER (1..255)	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+"The number of 100ms intervals over which to count received WSAs before accepting the advertised service."
+::= { dot3ProviderServiceRequestTableEntry 17 }
+
+dot3ProviderServiceStatus OBJECT-TYPE
+    SYNTAX INTEGER {
+		pending (0),
+		satisfied (1), 
+		partiallySatisfied (2)
+        }	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Current status of the requested provider service request."
+::= { dot3ProviderServiceRequestTableEntry 18 }
+
+-- ********************************************************************
+-- * END Provider Service Request Table
+-- ********************************************************************
+
+-- ********************************************************************
+-- * Provider Channel Info Table
+-- ********************************************************************
+
+-- WAVE Provider Channel Info Table
+-- DEFINED AS "Parameters used to populate channel info in a WSA";
+	
+dot3ProviderChannelInfoTable OBJECT-TYPE
+	SYNTAX SEQUENCE OF Dot3ProviderChannelInfoTableEntry
+	MAX-ACCESS not-accessible
+	STATUS current
+	DESCRIPTION
+	"Provider Channel Info Table."
+::= { dot3providerInfo 2}
+
+dot3ProviderChannelInfoTableEntry OBJECT-TYPE
+	SYNTAX Dot3ProviderChannelInfoTableEntry
+	MAX-ACCESS not-accessible
+	STATUS current
+	DESCRIPTION
+	"Channel information."
+	INDEX {dot3ProviderChannelInfoTableIndex}
+::= { dot3ProviderChannelInfoTable 1}
+
+Dot3ProviderChannelInfoTableEntry ::= SEQUENCE {
+	dot3ProviderChannelInfoTableIndex INTEGER,
+	dot3ProviderChannelInfoOperatingClass INTEGER,
+	dot3ProviderChannelInfoChannelNumber INTEGER,
+	dot3ProviderChannelInfoAdaptable TruthValue,
+	dot3ProviderChannelInfoDataRate INTEGER,
+	dot3ProviderChannelInfoTransmitPowerLevel INTEGER,
+	dot3ProviderChannelInfoEdcaBkCWmin INTEGER,
+	dot3ProviderChannelInfoEdcaBkCWmax INTEGER,
+	dot3ProviderChannelInfoEdcaBkAifsn INTEGER,
+	dot3ProviderChannelInfoEdcaBkTxopLimit INTEGER,
+	dot3ProviderChannelInfoEdcaBkMandatory INTEGER,
+	dot3ProviderChannelInfoEdcaBeCWmin INTEGER,
+	dot3ProviderChannelInfoEdcaBeCWmax INTEGER,
+	dot3ProviderChannelInfoEdcaBeAifsn INTEGER,
+	dot3ProviderChannelInfoEdcaBeTxopLimit INTEGER,
+	dot3ProviderChannelInfoEdcaBeMandatory INTEGER,
+	dot3ProviderChannelInfoEdcaViCWmin INTEGER,
+	dot3ProviderChannelInfoEdcaViCWmax INTEGER,
+	dot3ProviderChannelInfoEdcaViAifsn INTEGER,
+	dot3ProviderChannelInfoEdcaViTxopLimit INTEGER,
+	dot3ProviderChannelInfoEdcaViMandatory INTEGER,
+	dot3ProviderChannelInfoEdcaVoCWmin INTEGER,
+	dot3ProviderChannelInfoEdcaVoCWmax INTEGER,
+	dot3ProviderChannelInfoEdcaVoAifsn INTEGER,
+	dot3ProviderChannelInfoEdcaVoTxopLimit INTEGER,
+	dot3ProviderChannelInfoEdcaVoMandatory INTEGER
+	}
+
+dot3ProviderChannelInfoTableIndex OBJECT-TYPE
+	SYNTAX INTEGER (0..127)
+	MAX-ACCESS not-accessible
+	STATUS current 
+	DESCRIPTION
+	"Table index."
+::= { dot3ProviderChannelInfoTableEntry 1 }
+
+dot3ProviderChannelInfoOperatingClass OBJECT-TYPE
+	SYNTAX INTEGER 
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Operating Class."
+::= { dot3ProviderChannelInfoTableEntry 2 }
+
+dot3ProviderChannelInfoChannelNumber OBJECT-TYPE
+	SYNTAX INTEGER (0..200)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Channel Number."
+::= { dot3ProviderChannelInfoTableEntry 3 }
+
+dot3ProviderChannelInfoAdaptable OBJECT-TYPE
+	SYNTAX TruthValue
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Indicates whether data rate is fixed or maximum value."
+::= { dot3ProviderChannelInfoTableEntry 4 }
+
+dot3ProviderChannelInfoDataRate OBJECT-TYPE
+	SYNTAX INTEGER (2..127)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Channel data rate in increments of 500kbit/s, from 
+	1 Mb/s to 63.5 Mb/s."
+::= { dot3ProviderChannelInfoTableEntry 5 }
+
+dot3ProviderChannelInfoTransmitPowerLevel OBJECT-TYPE
+	SYNTAX INTEGER (-128..127)
+	UNITS "dBm"
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Channel EIRP transmit power."
+::= { dot3ProviderChannelInfoTableEntry 6 }
+
+dot3ProviderChannelInfoEdcaBkCWmin OBJECT-TYPE
+	SYNTAX INTEGER (0..255)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the value of the 
+	minimum size of the window that shall be used by 
+	a STA for a particular AC for generating a random 
+	number for the backoff. The value of this attribute 
+	shall be such that it could always be expressed in the
+	form of 2X - 1, where X is an integer."
+::= { dot3ProviderChannelInfoTableEntry 7 }
+
+dot3ProviderChannelInfoEdcaBkCWmax OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the value of the 
+	maximum size of the window that shall be used by 
+	a STA for a particular AC for generating a random 
+	number for the backoff. The value of this attribute 
+	shall be such that it could always be expressed in the
+	form of 2X - 1, where X is an integer."
+::= { dot3ProviderChannelInfoTableEntry 8 }
+
+dot3ProviderChannelInfoEdcaBkAifsn OBJECT-TYPE
+	SYNTAX INTEGER (2..15)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the number of slots, 
+	after a SIFS duration, that the STA shall sense the
+	medium idle either before transmitting or executing a 
+	backoff."
+::= { dot3ProviderChannelInfoTableEntry 9 }
+
+dot3ProviderChannelInfoEdcaBkTxopLimit OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the maximum number 
+	of microseconds of an EDCA TXOP."
+::= { dot3ProviderChannelInfoTableEntry 10 }
+
+dot3ProviderChannelInfoEdcaBkMandatory OBJECT-TYPE
+	SYNTAX TruthValue
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute, when TRUE, indicates that admission 
+	control is mandatory for the given AC. When False, 
+	this attribute indicates that the admission control 
+	is not mandatory for the given AC."
+::= { dot3ProviderChannelInfoTableEntry 11 }
+
+dot3ProviderChannelInfoEdcaBeCWmin OBJECT-TYPE
+	SYNTAX INTEGER (0..255)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the value of the 
+	minimum size of the window that shall be used by 
+	a STA for a particular AC for generating a random 
+	number for the backoff. The value of this attribute 
+	shall be such that it could always be expressed in the
+	form of 2X - 1, where X is an integer."
+::= { dot3ProviderChannelInfoTableEntry 12 }
+
+dot3ProviderChannelInfoEdcaBeCWmax OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the value of the 
+	maximum size of the window that shall be used by 
+	a STA for a particular AC for generating a random 
+	number for the backoff. The value of this attribute 
+	shall be such that it could always be expressed in the
+	form of 2X - 1, where X is an integer."
+::= { dot3ProviderChannelInfoTableEntry 13 }
+
+dot3ProviderChannelInfoEdcaBeAifsn OBJECT-TYPE
+	SYNTAX INTEGER (2..15)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the number of slots, 
+	after a SIFS duration, that the STA shall sense the
+	medium idle either before transmitting or executing a 
+	backoff."
+::= { dot3ProviderChannelInfoTableEntry 14 }
+
+dot3ProviderChannelInfoEdcaBeTxopLimit OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the maximum number 
+	of microseconds of an EDCA TXOP."
+::= { dot3ProviderChannelInfoTableEntry 15 }
+
+dot3ProviderChannelInfoEdcaBeMandatory OBJECT-TYPE
+	SYNTAX TruthValue
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute, when TRUE, indicates that admission 
+	control is mandatory for the given AC. When False, 
+	this attribute indicates that the admission control 
+	is not mandatory for the given AC."
+::= { dot3ProviderChannelInfoTableEntry 16 }
+
+dot3ProviderChannelInfoEdcaViCWmin OBJECT-TYPE
+	SYNTAX INTEGER (0..255)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the value of the 
+	minimum size of the window that shall be used by 
+	a STA for a particular AC for generating a random 
+	number for the backoff. The value of this attribute 
+	shall be such that it could always be expressed in the
+	form of 2X - 1, where X is an integer."
+::= { dot3ProviderChannelInfoTableEntry 17 }
+
+dot3ProviderChannelInfoEdcaViCWmax OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the value of the 
+	maximum size of the window that shall be used by 
+	a STA for a particular AC for generating a random 
+	number for the backoff. The value of this attribute 
+	shall be such that it could always be expressed in the
+	form of 2X - 1, where X is an integer."
+::= { dot3ProviderChannelInfoTableEntry 18 }
+
+dot3ProviderChannelInfoEdcaViAifsn OBJECT-TYPE
+	SYNTAX INTEGER (2..15)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the number of slots, 
+	after a SIFS duration, that the STA shall sense the
+	medium idle either before transmitting or executing a 
+	backoff."
+::= { dot3ProviderChannelInfoTableEntry 19 }
+
+dot3ProviderChannelInfoEdcaViTxopLimit OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the maximum number 
+	of microseconds of an EDCA TXOP."
+::= { dot3ProviderChannelInfoTableEntry 20 }
+
+dot3ProviderChannelInfoEdcaViMandatory OBJECT-TYPE
+	SYNTAX TruthValue
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute, when TRUE, indicates that admission 
+	control is mandatory for the given AC. When False, 
+	this attribute indicates that the admission control 
+	is not mandatory for the given AC."
+::= { dot3ProviderChannelInfoTableEntry 21 }
+
+dot3ProviderChannelInfoEdcaVoCWmin OBJECT-TYPE
+	SYNTAX INTEGER (0..255)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the value of the 
+	minimum size of the window that shall be used by 
+	a STA for a particular AC for generating a random 
+	number for the backoff. The value of this attribute 
+	shall be such that it could always be expressed in the
+	form of 2X - 1, where X is an integer."
+::= { dot3ProviderChannelInfoTableEntry 22 }
+
+dot3ProviderChannelInfoEdcaVoCWmax OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the value of the 
+	maximum size of the window that shall be used by 
+	a STA for a particular AC for generating a random 
+	number for the backoff. The value of this attribute 
+	shall be such that it could always be expressed in the
+	form of 2X - 1, where X is an integer."
+::= { dot3ProviderChannelInfoTableEntry 23 }
+
+dot3ProviderChannelInfoEdcaVoAifsn OBJECT-TYPE
+	SYNTAX INTEGER (2..15)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the number of slots, 
+	after a SIFS duration, that the STA shall sense the
+	medium idle either before transmitting or executing a 
+backoff."
+::= { dot3ProviderChannelInfoTableEntry 24 }
+
+dot3ProviderChannelInfoEdcaVoTxopLimit OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the maximum number 
+	of microseconds of an EDCA TXOP."
+::= { dot3ProviderChannelInfoTableEntry 25 }
+
+dot3ProviderChannelInfoEdcaVoMandatory OBJECT-TYPE
+	SYNTAX TruthValue
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute, when TRUE, indicates that admission 
+	control is mandatory for the given AC. When False, 
+	this attribute indicates that the admission control 
+	is not mandatory for the given AC."
+::= { dot3ProviderChannelInfoTableEntry 26 }
+	
+-- ********************************************************************
+-- * END Provider Channel Info Table
+-- ********************************************************************
+
+-- ********************************************************************
+-- * Provider WAVE Routing Advertisement 
+-- ********************************************************************
+
+-- WAVE Routing Advertisement 
+-- DEFINED AS "Parameters used to populate WRA in a WSA";
+	
+dot3ProviderWaveRoutingAdvertisement OBJECT IDENTIFIER ::= { dot3providerInfo 3}
+-- DEFINED AS "Parameters controlling operation in the WAVE IP network";
+
+dot3ProviderWaveRoutingAdvertisementRouterLifetime OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Router lifetime."
+::= { dot3ProviderWaveRoutingAdvertisement 1 }
+
+dot3ProviderWaveRoutingAdvertisementIpPrefix OBJECT-TYPE
+	SYNTAX Ipv6AddressPrefix
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"IP prefix."
+::= { dot3ProviderWaveRoutingAdvertisement 2 }
+
+dot3ProviderWaveRoutingAdvertisementPrefixLength OBJECT-TYPE
+	SYNTAX INTEGER (1..128)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"IP prefix length."
+::= { dot3ProviderWaveRoutingAdvertisement 3 }
+
+dot3ProviderWaveRoutingAdvertisementDefaultGateway OBJECT-TYPE
+	SYNTAX Ipv6Address
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Default gateway IP address."
+::= { dot3ProviderWaveRoutingAdvertisement 4 }
+
+dot3ProviderWaveRoutingAdvertisementGatewayMACAddress OBJECT-TYPE
+	SYNTAX MacAddress
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Default gateway MAC address."
+::= { dot3ProviderWaveRoutingAdvertisement 5 }
+
+dot3ProviderWaveRoutingAdvertisementPrimaryDns OBJECT-TYPE
+	SYNTAX Ipv6Address
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Primary DNS server IP address."
+::= { dot3ProviderWaveRoutingAdvertisement 6 }
+
+dot3ProviderWaveRoutingAdvertisementSecondaryDns OBJECT-TYPE
+	SYNTAX Ipv6Address
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Secondary DNS server IP address."
+::= { dot3ProviderWaveRoutingAdvertisement 7 }
+
+
+-- ********************************************************************
+-- * END Provider WAVE Routing Advertisement Table
+-- ********************************************************************
+
+-- ********************************************************************
+-- ********************************************************************
+-- * END Provider Information 
+-- ********************************************************************
+-- ********************************************************************
+
+
+-- ********************************************************************
+-- ********************************************************************
+-- * User Information 
+--	- User Service Request Table
+--	- User Available Service Table
+-- ********************************************************************
+-- ********************************************************************
+
+-- ********************************************************************
+-- * User Service Request Table
+-- ********************************************************************
+
+-- WAVE User Service Request Table
+-- DEFINED AS "Parameters populated by a user service request";
+	
+dot3UserServiceRequestTable OBJECT-TYPE
+	SYNTAX SEQUENCE OF Dot3UserServiceRequestTableEntry
+	MAX-ACCESS not-accessible
+	STATUS current
+	DESCRIPTION
+	"User Service Request Table."
+::= { dot3userInfo 1}
+
+dot3UserServiceRequestTableEntry OBJECT-TYPE
+	SYNTAX Dot3UserServiceRequestTableEntry
+	MAX-ACCESS not-accessible
+	STATUS current
+	DESCRIPTION
+	"Requests for user services."
+	INDEX {dot3UserServiceRequestTableIndex}
+::= { dot3UserServiceRequestTable 1}
+
+Dot3UserServiceRequestTableEntry ::= SEQUENCE {
+	dot3UserServiceRequestTableIndex INTEGER,
+	dot3UserServiceRequestType INTEGER,
+	dot3UserServiceRequestProviderServiceIdentifier OCTET STRING,
+	dot3UserServiceRequestProviderServiceContext OCTET STRING ,
+	dot3UserServiceRequestWsaTypes INTEGER,
+	dot3UserServiceRequestSourceMacAddress MacAddress,
+	dot3UserServiceRequestAdvertiserIdentifier OCTET STRING ,
+	dot3UserServiceRequestOperatingClass INTEGER,
+	dot3UserServiceRequestChannelNumber INTEGER,
+	dot3UserServiceRequestLinkQuality INTEGER,
+	dot3UserServiceRequestImmediateAccess INTEGER,
+	dot3UserServiceStatus INTEGER
+	}
+	
+dot3UserServiceRequestTableIndex OBJECT-TYPE
+	SYNTAX INTEGER (0..4095)
+	MAX-ACCESS not-accessible
+	STATUS current 
+	DESCRIPTION
+	"Table index."
+::= { dot3UserServiceRequestTableEntry 1 }
+
+dot3UserServiceRequestType OBJECT-TYPE
+	SYNTAX INTEGER {
+		autoAccessOnMatch (0),
+		noSchAccess (1)
+		}
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Request type."
+::= { dot3UserServiceRequestTableEntry 2 }
+
+dot3UserServiceRequestProviderServiceIdentifier OBJECT-TYPE
+	SYNTAX OCTET STRING (SIZE(1..8))
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Requested PSID for matching."
+::= { dot3UserServiceRequestTableEntry 3 }
+
+dot3UserServiceRequestProviderServiceContext OBJECT-TYPE
+	SYNTAX OCTET STRING (SIZE(0..31)) 
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Requested PSC for matching."
+::= { dot3UserServiceRequestTableEntry 4 }
+
+dot3UserServiceRequestWsaTypes OBJECT-TYPE
+	SYNTAX INTEGER {
+		securedWsa (1), 
+		unsecuredWsa (2),
+		securedOrUnsecured (3),
+		any (4)
+		}
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Requested WSA type(s) for matching."
+::= { dot3UserServiceRequestTableEntry 6 }
+
+dot3UserServiceRequestSourceMacAddress OBJECT-TYPE
+	SYNTAX MacAddress 
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Requested provider for matching."
+::= { dot3UserServiceRequestTableEntry 7 }
+
+dot3UserServiceRequestAdvertiserIdentifier OBJECT-TYPE
+	SYNTAX OCTET STRING (SIZE(0..32)) 
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Requested Advertiser Identifier for matching."
+::= { dot3UserServiceRequestTableEntry 8 }
+
+dot3UserServiceRequestOperatingClass OBJECT-TYPE
+	SYNTAX INTEGER 
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Requested Operating Class for matching."
+::= { dot3UserServiceRequestTableEntry 9 }
+
+dot3UserServiceRequestChannelNumber OBJECT-TYPE
+	SYNTAX INTEGER (0..200)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Requested Channel Number for matching."
+::= { dot3UserServiceRequestTableEntry 10 }
+
+dot3UserServiceRequestLinkQuality OBJECT-TYPE
+	SYNTAX INTEGER 
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Requested Link Quality for matching."
+::= { dot3UserServiceRequestTableEntry 11 }
+
+dot3UserServiceRequestImmediateAccess OBJECT-TYPE
+	SYNTAX INTEGER (0..255)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Indicates the duration of the immediate channel access
+	(during both time slot 0 and time slot 1) in sync
+	intervals. 255 indicates indefinite access. 0 indicates
+	immediate access not requested."
+::= { dot3UserServiceRequestTableEntry 12 }
+
+dot3UserServiceStatus OBJECT-TYPE
+	SYNTAX INTEGER {
+		pending (0),
+		satisfied (1), 
+		partiallySatisfied (2)
+        }	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Indicates the current status of the request."
+::= { dot3UserServiceRequestTableEntry 13 }
+
+-- ********************************************************************
+-- * END User Service Request Table
+-- ********************************************************************
+
+-- ********************************************************************
+-- * User Available Service Table
+-- ********************************************************************
+
+-- WAVE User Available Service Table
+-- DEFINED AS "Available services detected";
+	
+dot3UserAvailableServiceTable OBJECT-TYPE
+	SYNTAX SEQUENCE OF Dot3UserAvailableServiceTableEntry
+	MAX-ACCESS not-accessible
+	STATUS current
+	DESCRIPTION
+	"User Available Service Table."
+::= { dot3userInfo 2}
+
+dot3UserAvailableServiceTableEntry OBJECT-TYPE
+	SYNTAX Dot3UserAvailableServiceTableEntry
+	MAX-ACCESS not-accessible
+	STATUS current
+	DESCRIPTION
+	"Available services."
+	INDEX {dot3UserAvailableServiceTableIndex}
+::= { dot3UserAvailableServiceTable 1}
+
+Dot3UserAvailableServiceTableEntry ::= SEQUENCE {
+	dot3UserAvailableServiceTableIndex INTEGER,
+	dot3UserAvailableWsaType INTEGER,
+	dot3UserAvailableSecurityResultCode INTEGER,
+	dot3UserAvailableGenerationTime OCTET STRING, 
+	dot3UserAvailableLifetime OCTET STRING,	
+	dot3UserAvailableEarliestNextCrlTime OCTET STRING,
+	dot3UserAvailableSourceMacAddress MacAddress,
+	dot3UserAvailableProviderServiceIdentifier OCTET STRING,
+	dot3UserAvailableProviderServiceContext OCTET STRING,
+	dot3UserAvailableIpv6Address Ipv6Address,
+	dot3UserAvailableServicePort INTEGER,
+	dot3UserAvailableProviderMacAddress MacAddress,
+	dot3UserAvailableRcpiThreshold INTEGER,
+	dot3UserAvailableRcpi INTEGER,
+	dot3UserAvailableWsaCountThreshold INTEGER,
+	dot3UserAvailableOperatingClass INTEGER,
+	dot3UserAvailableChannelNumber INTEGER,
+	dot3UserAvailableAdaptable TruthValue,
+	dot3UserAvailableDataRate INTEGER,
+	dot3UserAvailableTransmitPowerLevel INTEGER,
+	dot3UserAvailableChannelAccess INTEGER,
+	dot3UserAvailableAdvertiserIdentifier OCTET STRING,
+	dot3UserAvailableTxLatitude INTEGER,
+	dot3UserAvailableTxLongitude INTEGER,
+	dot3UserAvailableTxElevation OCTET STRING,
+	dot3UserAvailableLinkQuality INTEGER,
+	dot3UserAvailableServiceStatus INTEGER,
+	dot3UserAvailableEdcaBkCWmin INTEGER,
+	dot3UserAvailableEdcaBkCWmax INTEGER,
+	dot3UserAvailableEdcaBkAifsn INTEGER,
+	dot3UserAvailableEdcaBkTxopLimit INTEGER,
+	dot3UserAvailableEdcaBkMandatory INTEGER,
+	dot3UserAvailableEdcaBeCWmin INTEGER,
+	dot3UserAvailableEdcaBeCWmax INTEGER,
+	dot3UserAvailableEdcaBeAifsn INTEGER,
+	dot3UserAvailableEdcaBeTxopLimit INTEGER,
+	dot3UserAvailableEdcaBeMandatory INTEGER,
+	dot3UserAvailableEdcaViCWmin INTEGER,
+	dot3UserAvailableEdcaViCWmax INTEGER,
+	dot3UserAvailableEdcaViAifsn INTEGER,
+	dot3UserAvailableEdcaViTxopLimit INTEGER,
+	dot3UserAvailableEdcaViMandatory INTEGER,
+	dot3UserAvailableEdcaVoCWmin INTEGER,
+	dot3UserAvailableEdcaVoCWmax INTEGER,
+	dot3UserAvailableEdcaVoAifsn INTEGER,
+	dot3UserAvailableEdcaVoTxopLimit INTEGER,
+	dot3UserAvailableEdcaVoMandatory INTEGER
+	}
+
+dot3UserAvailableServiceTableIndex OBJECT-TYPE
+	SYNTAX INTEGER (0..4095)
+	MAX-ACCESS not-accessible
+	STATUS current 
+	DESCRIPTION
+	"Table index."
+::= { dot3UserAvailableServiceTableEntry 1 }
+
+dot3UserAvailableWsaType OBJECT-TYPE
+	SYNTAX INTEGER {
+		securedWsa (1), 
+		unsecuredWsa (2)
+        }	
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Security level of the received WSA."
+::= { dot3UserAvailableServiceTableEntry 2 }
+
+dot3UserAvailableSecurityResultCode OBJECT-TYPE
+	SYNTAX INTEGER	{
+	success (1), 
+	inconsistentInputParameters (2),
+	spduParsingInvalidInput (3),
+	spduParsingUnsupportedCriticalInformationField (4),
+	spduParsingCertificateNotFound (5),
+	spduParsingGenerationTimeNotAvailable (6),
+	spduParsingGenerationLocationNotAvailable (7),
+	spduCertificateChainNotEnoughInformationToConstructChain (8),
+	spduCertificateChainChainEndedAtUntrustedRoot (9),
+	spduCertificateChainChainWasTooLongForImplementation (10),
+	spduCertificateChainCertificateRevoked (11),
+	spduCertificateChainOverdueCRL (12),
+	spduCertificateChainInconsistentExpiryTimes (13), 
+	spduCertificateChainInconsistentStartTimes (14),
+	spduCertificateChainInconsistentChainPermissions (15),
+	spduCryptoVerificationFailure (16),
+	spduConsistencyFutureCertificateAtGenerationTime (17),
+	spduConsistencyExpiredCertificateAtGenerationTime (18),
+	spduConsistencyExpiryDateTooEarly (19),
+	spduConsistencyExpiryDateTooLate (20),
+	spduConsistencyGenerationLocationOutsideValidityRegion (21),
+	spduConsistencyNoGenerationLocation (22),
+	spduConsistencyUnauthorizedPSID (23),
+	spduInternalConsistencyExpiryTimeBeforeGenerationTime (24),
+	spduInternalConsistencyextDataHashDoesntMatch (25),
+	spduInternalConsistencynoExtDataHashProvided (26),
+	spduInternalConsistencynoExtDataHashPresent (27),
+	spduLocalConsistencyPSIDsDontMatch (28),
+	spduLocalConsistencyChainWasTooLongForSDEE (29),
+	spduRelevanceGenerationTimeTooFarInPast (30),
+	spduRelevanceGenerationTimeTooFarInFuture (31),
+	spduRelevanceExpiryTimeInPast (32),
+	spduRelevanceGenerationLocationTooDistant (33),
+	spduRelevanceReplayedSpdu (34),
+	spduRelevanceCertificateExpired (35),
+	spduCertificateChainInconsistentValidityRegion (36)
+		}
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Security level of the received WSA."
+::= { dot3UserAvailableServiceTableEntry 3 }
+
+dot3UserAvailableGenerationTime OBJECT-TYPE
+	SYNTAX OCTET STRING (SIZE(8))
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Generation time of the WSA security information per 
+	IEEE Std 1609.2."
+::= { dot3UserAvailableServiceTableEntry 4 }
+
+dot3UserAvailableLifetime OBJECT-TYPE
+	SYNTAX OCTET STRING (SIZE(8))
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Lifetime of the WSA security information per 
+	IEEE Std 1609.2."
+::= { dot3UserAvailableServiceTableEntry 5 }
+
+dot3UserAvailableEarliestNextCrlTime OBJECT-TYPE
+	SYNTAX OCTET STRING (SIZE(8))
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Expected certificate revocation list time 
+	of the WSA security information per IEEE Std 1609.2."
+::= { dot3UserAvailableServiceTableEntry 6 }
+
+dot3UserAvailableSourceMacAddress OBJECT-TYPE
+	SYNTAX MacAddress
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Transmitter of the WSA."
+::= { dot3UserAvailableServiceTableEntry 7 }
+
+dot3UserAvailableProviderServiceIdentifier OBJECT-TYPE
+	SYNTAX OCTET STRING (SIZE(1..8))
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"PSID of the available service."
+::= { dot3UserAvailableServiceTableEntry 8 }
+
+dot3UserAvailableProviderServiceContext OBJECT-TYPE
+	SYNTAX OCTET STRING (SIZE(0..31))
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"PSC of the available service."
+::= { dot3UserAvailableServiceTableEntry 9 }
+
+dot3UserAvailableIpv6Address OBJECT-TYPE
+	SYNTAX Ipv6Address
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"IP address of the service provider."
+::= { dot3UserAvailableServiceTableEntry 10 }
+
+dot3UserAvailableServicePort OBJECT-TYPE
+	SYNTAX INTEGER 
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Transport protocol port number of the available service."
+::= { dot3UserAvailableServiceTableEntry 11 }
+
+dot3UserAvailableProviderMacAddress OBJECT-TYPE
+	SYNTAX MacAddress
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"MAC address of the service provider, if different from 
+	the provider."
+::= { dot3UserAvailableServiceTableEntry 12 }
+
+dot3UserAvailableRcpiThreshold OBJECT-TYPE
+	SYNTAX INTEGER (0..255)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Suggested reception level of the received WSA. 
+	Coded per IEEE Std 802.11-2012/18.3.10.7."
+::= { dot3UserAvailableServiceTableEntry 13 }
+
+dot3UserAvailableRcpi OBJECT-TYPE
+	SYNTAX INTEGER (0..255)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Actual level of the received WSA. 
+	Coded per IEEE Std 802.11-2012/18.3.10.7."
+::= { dot3UserAvailableServiceTableEntry 14 }
+
+dot3UserAvailableWsaCountThreshold OBJECT-TYPE
+	SYNTAX INTEGER (0..255)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Suggested number of received WSA 
+	for service acceptance."
+::= { dot3UserAvailableServiceTableEntry 15 }
+
+dot3UserAvailableOperatingClass OBJECT-TYPE
+	SYNTAX INTEGER 
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Operating Class of the channel."
+::= { dot3UserAvailableServiceTableEntry 16 }
+
+dot3UserAvailableChannelNumber OBJECT-TYPE
+	SYNTAX INTEGER (0..200)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Number of the SCH associated with the service."
+::= { dot3UserAvailableServiceTableEntry 17 }
+
+dot3UserAvailableAdaptable OBJECT-TYPE
+	SYNTAX TruthValue
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+"Indicates whether data rate is interpreted as maximum allowed value."
+::= { dot3UserAvailableServiceTableEntry 18 }
+
+dot3UserAvailableDataRate OBJECT-TYPE
+	SYNTAX INTEGER (2..127)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Data rate on the indicated channel, in increments 
+	of 500kbit/s from 1 Mb/s to 63.5 Mb/s."
+::= { dot3UserAvailableServiceTableEntry 19 }
+
+dot3UserAvailableTransmitPowerLevel OBJECT-TYPE
+	SYNTAX INTEGER (-128..127)
+	UNITS "dBm"
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Power level on the indicated channel."
+::= { dot3UserAvailableServiceTableEntry 20 }
+
+dot3UserAvailableChannelAccess OBJECT-TYPE
+	SYNTAX INTEGER {
+		continuous (0), 
+		alternatingTimeslot1Only (1),
+		alternatingTimeslot0Only (2)
+        }
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Indicates the duty cycle of the advertised service."
+::= { dot3UserAvailableServiceTableEntry 21 }
+
+dot3UserAvailableAdvertiserIdentifier OBJECT-TYPE
+	SYNTAX OCTET STRING (SIZE(0..32))
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Advertiser Identifier of the advertising device."
+::= { dot3UserAvailableServiceTableEntry 22 }
+
+dot3UserAvailableTxLatitude OBJECT-TYPE
+	SYNTAX INTEGER (-900000000..900000001)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Latitude of the advertising device
+	LSB = 1/10 micro degree
+	Providing a range of plus-minus 90 degrees,
+	with 900000001 indicating unavailable."
+::= { dot3UserAvailableServiceTableEntry 23 }
+
+dot3UserAvailableTxLongitude OBJECT-TYPE
+	SYNTAX INTEGER (-1799999999..1800000001)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Longitude of the advertising device
+	LSB = 1/10 micro degree
+	Providing a range of plus-minus 180 degrees,
+	with 1800000001 indicating unavailable."
+::= { dot3UserAvailableServiceTableEntry 24 }
+
+dot3UserAvailableTxElevation OBJECT-TYPE
+	SYNTAX OCTET STRING (SIZE(2))
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Elevation of the advertising device.
+	1 decimeter LSB (10 cm) 
+	Encode elevations from 0 to 6143.9 meters 
+	above the reference ellipsoid as 0x0000 to 0xEFFF. 
+	Encode elevations from -409.5 to -0.1 meters, 
+	i.e. below the reference ellipsoid, as 0xF001 to 0xFFFF
+	unknown as 0xF000."
+::= { dot3UserAvailableServiceTableEntry 25 }
+
+dot3UserAvailableLinkQuality OBJECT-TYPE
+	SYNTAX INTEGER 
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Estimated link quality associated with the 
+	advertised service."
+::= { dot3UserAvailableServiceTableEntry 26 }
+
+dot3UserAvailableServiceStatus OBJECT-TYPE
+	SYNTAX INTEGER {
+		available (0),
+		active (1)
+        }
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"Indicates whether device resources have been allocated 
+	in support of the service."
+::= { dot3UserAvailableServiceTableEntry 27 }
+
+dot3UserAvailableEdcaBkCWmin OBJECT-TYPE
+	SYNTAX INTEGER (0..255)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the value of the 
+	minimum size of the window that shall be used by 
+	a STA for a particular AC for generating a random 
+	number for the backoff. The value of this attribute 
+	shall be such that it could always be expressed in the
+	form of 2X - 1, where X is an integer."
+::= { dot3UserAvailableServiceTableEntry 28 }
+
+dot3UserAvailableEdcaBkCWmax OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the value of the 
+	maximum size of the window that shall be used by 
+	a STA for a particular AC for generating a random 
+	number for the backoff. The value of this attribute 
+	shall be such that it could always be expressed in the
+	form of 2X - 1, where X is an integer."
+::= { dot3UserAvailableServiceTableEntry 29 }
+
+dot3UserAvailableEdcaBkAifsn OBJECT-TYPE
+	SYNTAX INTEGER (2..15)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the number of slots, 
+	after a SIFS duration, that the STA shall sense the
+	medium idle either before transmitting or executing a 
+	backoff."
+::= { dot3UserAvailableServiceTableEntry 30 }
+
+dot3UserAvailableEdcaBkTxopLimit OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the maximum number 
+	of microseconds of an EDCA TXOP."
+::= { dot3UserAvailableServiceTableEntry 31 }
+
+dot3UserAvailableEdcaBkMandatory OBJECT-TYPE
+	SYNTAX TruthValue
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute, when TRUE, indicates that admission 
+	control is mandatory for the given AC. When False, 
+	this attribute indicates that the admission control 
+	is not mandatory for the given AC."
+::= { dot3UserAvailableServiceTableEntry 32 }
+
+dot3UserAvailableEdcaBeCWmin OBJECT-TYPE
+	SYNTAX INTEGER (0..255)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the value of the 
+	minimum size of the window that shall be used by 
+	a STA for a particular AC for generating a random 
+	number for the backoff. The value of this attribute 
+	shall be such that it could always be expressed in the
+	form of 2X - 1, where X is an integer."
+::= { dot3UserAvailableServiceTableEntry 33 }
+
+dot3UserAvailableEdcaBeCWmax OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the value of the 
+	maximum size of the window that shall be used by 
+	a STA for a particular AC for generating a random 
+	number for the backoff. The value of this attribute 
+	shall be such that it could always be expressed in the
+	form of 2X - 1, where X is an integer."
+::= { dot3UserAvailableServiceTableEntry 34 }
+
+dot3UserAvailableEdcaBeAifsn OBJECT-TYPE
+	SYNTAX INTEGER (2..15)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the number of slots, 
+	after a SIFS duration, that the STA shall sense the
+medium idle either before transmitting or executing a backoff."
+::= { dot3UserAvailableServiceTableEntry 35 }
+
+dot3UserAvailableEdcaBeTxopLimit OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the maximum number 
+	of microseconds of an EDCA TXOP."
+::= { dot3UserAvailableServiceTableEntry 36 }
+
+dot3UserAvailableEdcaBeMandatory OBJECT-TYPE
+	SYNTAX TruthValue
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute, when TRUE, indicates that admission 
+	control is mandatory for the given AC. When False, 
+	this attribute indicates that the admission control 
+	is not mandatory for the given AC."
+::= { dot3UserAvailableServiceTableEntry 37 }
+
+dot3UserAvailableEdcaViCWmin OBJECT-TYPE
+	SYNTAX INTEGER (0..255)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the value of the 
+	minimum size of the window that shall be used by 
+	a STA for a particular AC for generating a random 
+	number for the backoff. The value of this attribute 
+	shall be such that it could always be expressed in the
+	form of 2X - 1, where X is an integer."
+::= { dot3UserAvailableServiceTableEntry 38 }
+
+dot3UserAvailableEdcaViCWmax OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the value of the 
+	maximum size of the window that shall be used by 
+	a STA for a particular AC for generating a random 
+	number for the backoff. The value of this attribute 
+	shall be such that it could always be expressed in the
+	form of 2X - 1, where X is an integer."
+::= { dot3UserAvailableServiceTableEntry 39 }
+
+dot3UserAvailableEdcaViAifsn OBJECT-TYPE
+	SYNTAX INTEGER (2..15)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the number of slots, 
+	after a SIFS duration, that the STA shall sense the
+	medium idle either before transmitting or executing a 
+	backoff."
+::= { dot3UserAvailableServiceTableEntry 40 }
+
+dot3UserAvailableEdcaViTxopLimit OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the maximum number 
+	of microseconds of an EDCA TXOP."
+::= { dot3UserAvailableServiceTableEntry 41 }
+
+dot3UserAvailableEdcaViMandatory OBJECT-TYPE
+	SYNTAX TruthValue
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute, when TRUE, indicates that admission 
+	control is mandatory for the given AC. When False, 
+	this attribute indicates that the admission control 
+	is not mandatory for the given AC."
+::= { dot3UserAvailableServiceTableEntry 42 }
+
+dot3UserAvailableEdcaVoCWmin OBJECT-TYPE
+	SYNTAX INTEGER (0..255)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the value of the 
+	minimum size of the window that shall be used by 
+	a STA for a particular AC for generating a random 
+	number for the backoff. The value of this attribute 
+	shall be such that it could always be expressed in the
+	form of 2X - 1, where X is an integer."
+::= { dot3UserAvailableServiceTableEntry 43 }
+
+dot3UserAvailableEdcaVoCWmax OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the value of the 
+	maximum size of the window that shall be used by 
+	a STA for a particular AC for generating a random 
+	number for the backoff. The value of this attribute 
+	shall be such that it could always be expressed in the
+	form of 2X - 1, where X is an integer."
+::= { dot3UserAvailableServiceTableEntry 44 }
+
+dot3UserAvailableEdcaVoAifsn OBJECT-TYPE
+	SYNTAX INTEGER (2..15)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the number of slots, 
+	after a SIFS duration, that the STA shall sense the
+medium idle either before transmitting or executing a backoff."
+::= { dot3UserAvailableServiceTableEntry 45 }
+
+dot3UserAvailableEdcaVoTxopLimit OBJECT-TYPE
+	SYNTAX INTEGER (0..65535)
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute shall specify the maximum number 
+	of microseconds of an EDCA TXOP."
+::= { dot3UserAvailableServiceTableEntry 46 }
+
+dot3UserAvailableEdcaVoMandatory OBJECT-TYPE
+	SYNTAX TruthValue
+	MAX-ACCESS read-only
+	STATUS current 
+	DESCRIPTION
+	"This attribute, when TRUE, indicates that admission 
+	control is mandatory for the given AC. When False, 
+	this attribute indicates that the admission control 
+	is not mandatory for the given AC."
+::= { dot3UserAvailableServiceTableEntry 47 }
+
+-- ********************************************************************
+-- * END User Available Service Table
+-- ********************************************************************
+
+-- ********************************************************************
+-- ********************************************************************
+-- * END User Information 
+-- ********************************************************************
+-- ********************************************************************
+
+-- ********************************************************************
+-- * Conformance Segment
+-- ********************************************************************
+dot3Compliances OBJECT IDENTIFIER ::= { dot3conformance 1 }
+dot3Groups OBJECT IDENTIFIER ::= { dot3conformance 2 }
+
+dot3Compliance MODULE-COMPLIANCE
+	STATUS current
+	DESCRIPTION
+	"Describes the requirements for conformance to the IEEE 
+	1609.3 MIB."
+	MODULE -- this module
+	MANDATORY-GROUPS { 
+	dot3CapabilitiesGroup
+	}
+	
+GROUP dot3IpV6Group
+DESCRIPTION 
+"This group is mandatory for WAVE devices capable of IPv6 operation."
+
+GROUP dot3WsmpGroup
+DESCRIPTION 
+"This group is mandatory for WAVE devices capable of WSMP operation."
+
+GROUP dot3RegistrationPortGroup
+DESCRIPTION 
+"This group is mandatory for implementations supporting remote service request over an IP network."
+
+GROUP dot3WavRoutingAdvertisement
+DESCRIPTION 
+"This group is mandatory for Providers sending WRAs."
+
+GROUP dot3ChannelInfo
+DESCRIPTION 
+"This group is mandatory for Providers sending WSA Channel Info."
+
+GROUP dot3ProviderGroup
+DESCRIPTION 
+"This group is optional for implementations supporting Provider operation."
+
+GROUP dot3ProviderIpGroup
+DESCRIPTION 
+"This group is optional for Providers of IPv6 services."
+
+GROUP dot3SecuredUserGroup
+DESCRIPTION 
+"This group is optional for User operation with secured WSAs."
+
+GROUP dot3UserGroup
+DESCRIPTION 
+"This group is optional for implementations supporting User operation."
+
+GROUP dot3ChannelRequestGroup
+DESCRIPTION 
+"This group is optional for implementations supporting channel service requests."
+
+::= { dot3Compliances 1 }
+
+-- ********************************************************************
+-- * Conformance Groups
+-- ********************************************************************
+dot3CapabilitiesGroup OBJECT-GROUP
+	OBJECTS { 
+	dot3NumberOfChannelsSupported,
+	dot3CchAccessImplemented,
+	dot3SchAccessImplemented,
+	dot3IpV6Implemented,
+	dot3WsmpImplemented,
+	dot3UserRoleImplemented,
+	dot3ProviderRoleImplemented,
+	dot3TimingAdvertisementServiceImplemented	}
+	STATUS current
+	DESCRIPTION
+	"Capabilities objects"
+	::= { dot3Groups 1 }
+
+dot3IpV6Group OBJECT-GROUP
+	OBJECTS { 
+	dot3UdpImplemented,
+	dot3TcpImplemented
+	}
+	STATUS current
+	DESCRIPTION
+	"IP protocol objects"
+	::= { dot3Groups 2 }
+
+dot3WsmpGroup OBJECT-GROUP
+	OBJECTS { 
+	dot3WsmMaxLength,
+	dot3WsmServiceRequestPsid
+	}
+	STATUS current
+	DESCRIPTION
+	"WSMP protocol objects"
+	::= { dot3Groups 3 }
+
+dot3ProviderGroup OBJECT-GROUP
+	OBJECTS { 
+	dot3AdvertiserIdentifier,
+	dot3WsaType,
+	dot3ProviderServiceIdentifier,
+	dot3ProviderServiceContext,
+	dot3ProviderChannelAccess,
+	dot3ProviderBestAvailable,
+	dot3ProviderOperatingClass,
+	dot3ProviderServiceChannelNumber,
+	dot3ProviderWsaChannelNumber,
+	dot3ProviderRepeatRate,
+	dot3ProviderMacAddress,
+	dot3ProviderRcpiThreshold,
+	dot3ProviderWsaCountThreshold,
+dot3ProviderWsaCountThresholdInterval,	dot3ProviderServiceStatus
+	}
+	STATUS current
+	DESCRIPTION
+	"Provider request and channel objects."
+	::= { dot3Groups 4 }
+
+dot3ProviderIpGroup OBJECT-GROUP
+	OBJECTS { 
+	dot3ProviderIpService,
+	dot3ProviderIpv6Address,
+	dot3ProviderServicePort
+	}
+	STATUS current
+	DESCRIPTION
+	"Provider IPv6-related objects"
+	::= { dot3Groups 5 }
+
+dot3UserGroup OBJECT-GROUP
+	OBJECTS { 
+	dot3UserServiceRequestType,
+	dot3UserServiceRequestProviderServiceIdentifier,
+	dot3UserServiceRequestProviderServiceContext,
+	dot3UserServiceRequestWsaTypes,
+	dot3UserServiceRequestSourceMacAddress,
+	dot3UserServiceRequestAdvertiserIdentifier,
+	dot3UserServiceRequestOperatingClass,
+	dot3UserServiceRequestChannelNumber,
+	dot3UserServiceRequestLinkQuality,
+	dot3UserServiceRequestImmediateAccess,
+	dot3UserServiceStatus,
+	dot3UserAvailableWsaType,
+	dot3UserAvailableSourceMacAddress,
+	dot3UserAvailableProviderServiceIdentifier,
+	dot3UserAvailableProviderServiceContext,
+	dot3UserAvailableIpv6Address,
+	dot3UserAvailableServicePort,
+	dot3UserAvailableProviderMacAddress,
+	dot3UserAvailableRcpiThreshold,
+	dot3UserAvailableRcpi,
+	dot3UserAvailableWsaCountThreshold,
+	dot3UserAvailableOperatingClass,
+	dot3UserAvailableChannelNumber,
+	dot3UserAvailableAdaptable,
+	dot3UserAvailableDataRate,
+	dot3UserAvailableTransmitPowerLevel,
+	dot3UserAvailableChannelAccess,
+	dot3UserAvailableAdvertiserIdentifier,
+	dot3UserAvailableTxLatitude,
+	dot3UserAvailableTxLongitude,
+	dot3UserAvailableTxElevation,
+	dot3UserAvailableLinkQuality,
+	dot3UserAvailableServiceStatus,
+	dot3UserAvailableEdcaBkCWmin,
+	dot3UserAvailableEdcaBkCWmax,
+	dot3UserAvailableEdcaBkAifsn,
+	dot3UserAvailableEdcaBkTxopLimit,
+	dot3UserAvailableEdcaBkMandatory,
+	dot3UserAvailableEdcaBeCWmin,
+	dot3UserAvailableEdcaBeCWmax,
+	dot3UserAvailableEdcaBeAifsn,
+	dot3UserAvailableEdcaBeTxopLimit,
+	dot3UserAvailableEdcaBeMandatory,
+	dot3UserAvailableEdcaViCWmin,
+	dot3UserAvailableEdcaViCWmax,
+	dot3UserAvailableEdcaViAifsn,
+	dot3UserAvailableEdcaViTxopLimit,
+	dot3UserAvailableEdcaViMandatory,
+	dot3UserAvailableEdcaVoCWmin,
+	dot3UserAvailableEdcaVoCWmax,
+	dot3UserAvailableEdcaVoAifsn,
+	dot3UserAvailableEdcaVoTxopLimit,
+	dot3UserAvailableEdcaVoMandatory
+	}
+	STATUS current
+	DESCRIPTION
+	"User service request and available service objects"
+	::= { dot3Groups 6 }
+
+dot3SecuredUserGroup OBJECT-GROUP
+	OBJECTS { 
+	dot3UserAvailableSecurityResultCode,
+	dot3UserAvailableGenerationTime, 
+	dot3UserAvailableLifetime,	
+	dot3UserAvailableEarliestNextCrlTime
+	}
+	STATUS current
+	DESCRIPTION
+	"User available service objects related to secured WSAs"
+	::= { dot3Groups 7 }
+
+dot3ChannelRequestGroup OBJECT-GROUP
+	OBJECTS { 
+	dot3ChannelServiceRequestChannelIdentifier,
+dot3ChannelServiceRequestTimeSlot,
+	dot3ChannelServiceRequestStatus
+	}
+	STATUS current
+	DESCRIPTION
+	"Channel service request objects"
+	::= { dot3Groups 8 }
+
+dot3RegistrationPortGroup OBJECT-GROUP
+	OBJECTS { 
+	dot3RegistrationPort
+	}
+	STATUS current
+	DESCRIPTION
+	"Service registration port objects"
+	::= { dot3Groups 9 }
+
+dot3WavRoutingAdvertisement OBJECT-GROUP
+	OBJECTS { 
+	dot3ProviderWaveRoutingAdvertisementRouterLifetime,
+	dot3ProviderWaveRoutingAdvertisementIpPrefix,
+	dot3ProviderWaveRoutingAdvertisementPrefixLength,
+	dot3ProviderWaveRoutingAdvertisementDefaultGateway,
+	dot3ProviderWaveRoutingAdvertisementGatewayMACAddress,
+	dot3ProviderWaveRoutingAdvertisementPrimaryDns,
+	dot3ProviderWaveRoutingAdvertisementSecondaryDns
+	}
+	STATUS current
+	DESCRIPTION
+	"WAVE Routing Advertisement objects"
+	::= { dot3Groups 10 }
+
+dot3ChannelInfo OBJECT-GROUP
+	OBJECTS { 
+	dot3ProviderChannelInfoOperatingClass,
+	dot3ProviderChannelInfoChannelNumber,
+	dot3ProviderChannelInfoAdaptable,
+	dot3ProviderChannelInfoDataRate,
+	dot3ProviderChannelInfoTransmitPowerLevel,
+	dot3ProviderChannelInfoEdcaBkCWmin,
+	dot3ProviderChannelInfoEdcaBkCWmax,
+	dot3ProviderChannelInfoEdcaBkAifsn,
+	dot3ProviderChannelInfoEdcaBkTxopLimit,
+	dot3ProviderChannelInfoEdcaBkMandatory,
+	dot3ProviderChannelInfoEdcaBeCWmin,
+	dot3ProviderChannelInfoEdcaBeCWmax,
+	dot3ProviderChannelInfoEdcaBeAifsn,
+	dot3ProviderChannelInfoEdcaBeTxopLimit,
+	dot3ProviderChannelInfoEdcaBeMandatory,
+	dot3ProviderChannelInfoEdcaViCWmin,
+	dot3ProviderChannelInfoEdcaViCWmax,
+	dot3ProviderChannelInfoEdcaViAifsn,
+	dot3ProviderChannelInfoEdcaViTxopLimit,
+	dot3ProviderChannelInfoEdcaViMandatory,
+	dot3ProviderChannelInfoEdcaVoCWmin,
+	dot3ProviderChannelInfoEdcaVoCWmax,
+	dot3ProviderChannelInfoEdcaVoAifsn,
+	dot3ProviderChannelInfoEdcaVoTxopLimit,
+	dot3ProviderChannelInfoEdcaVoMandatory
+	}
+	STATUS current
+	DESCRIPTION
+	"WAVE Routing Advertisement objects"
+	::= { dot3Groups 11 }
+
+-- ********************************************************************
+-- * End of 1609.3 MIB
+-- ********************************************************************
+END
+
