@@ -12,7 +12,7 @@ IMPORTS
 -- * MODULE IDENTITY
 -- ********************************************************************
 ieee1609dot3v3mib MODULE-IDENTITY
-LAST-UPDATED "201604250000Z"
+LAST-UPDATED "201705150000Z"
 ORGANIZATION "IEEE P1609"
 CONTACT-INFO
 "WG E-mail: stds-p1609@ieee.org
@@ -27,11 +27,11 @@ DESCRIPTION
 "The MIB module for IEEE 1609.3v3 full use entities.
 iso(1) iso-identified-organization(3) ieee(111)
 standards-association-numbered-series-standards(2) wave-stds(1609) 
-dot3(3) wmemib(4) major-version-2(2) minor-version-1 (1)"
-REVISION "201604250000Z"
+dot3(3) wmemib(4) major-version-2(2)"
+REVISION "201705150000Z"
 DESCRIPTION 
 "Consistent with 1609.3v3 standard."
-::= { ieee1609 3 4 2 1}
+::= { ieee1609 3 4 2}
 ieee1609 OBJECT IDENTIFIER ::= 
 {1 iso-identified-organization (3) ieee (111) 
 standards-association-numbered-series-standards (2) 1609}
