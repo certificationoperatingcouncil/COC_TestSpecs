@@ -3,13 +3,12 @@
 
 ### SUT sending IPv6/UDP packets to the Test System
 
-[With Images]( https://htmlpreview.github.io/?https://github.com/certificationoperatingcouncil/COC_TestSpecs/blob/master/Test%20Sequences/16094%20IPv6%20Testing%20TxProfile.html)
 Last updated 08/10/2017 ([history](#history))
 
 #### Reference
 May be used for WAVEMCO-TSS&TP (1609.4): TP-16094-TXT-IP6-BV-01
 
-Initiation Sequence
+**Initiation Sequence** [with images]( https://htmlpreview.github.io/?https://github.com/certificationoperatingcouncil/COC_TestSpecs/blob/master/Test%20Sequences/html/16094%20IPv6%20Testing%20TxProfile.html)
 
 ```puml
 Test_System->SUT: SetInitialState
@@ -27,7 +26,7 @@ Test_System->SUT: StartIPv6Tx
 5. **Test System -> SUT**: send *SetIPv6Address* - request to set IP address, may be optional if Link Local IP address is already setup
 6. **Test System -> SUT**: send *StartIPv6Tx* - request for SUT to send IPv6/UDP packets to the Test System [note5](#note5)
 
-Termination Sequence
+**Termination Sequence**
 
 ```puml
 Test_System->SUT: StopIPv6Tx
@@ -46,11 +45,11 @@ Sample setup for *StartIPv6Tx*
 
 |Parameter|Explanation|Example|
 |---|---|---|
-|radio|index to radio interface|radio1|
+|radio|index to radio interface|radio0|
 |interfaceName||wlan0|
 |destIpAddress|Link local IPv6 address of the test system|FE80::1|
 |destPort|UDP port for receiving test messages on the test system|55555|
-|protocol||UDP|
+|protocol||udp|
 |repeatRate|number of messages per 5 sec interval| 10 i.e. 2msg/sec|
 |eventHandling| omitted, since test system receives messages||
 |payload|payload to include in IPv6 packets|"Hello World"|
@@ -62,7 +61,7 @@ History
 
 |Date|Changes|
 |---|---|
-|8/10/2017|Original document|
+|8/10/2017|Initial version|
 
 
 </a>
