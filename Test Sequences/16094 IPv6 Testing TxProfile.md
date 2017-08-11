@@ -25,9 +25,9 @@ Note: Response and Exception messages are omitted
 <a name=note5>
 Sample setup for *StartIPv6Tx*
 
-| parameter | explanation | example |
-| --------- | ----------- | ------- |
-| radio | index to radio interface | radio1 |
+|Parameter|Explanation|Example|
+|---|---|---|
+|radio|index to radio interface|radio1|
 |interfaceName||wlan0|
 |destIpAddress|Link local IPv6 address of the test system|FE80::1|
 |destPort|UDP port for receiving test messages on the test system|55555|
@@ -35,10 +35,5 @@ Sample setup for *StartIPv6Tx*
 |repeatRate|number of messages per 5 sec interval| 10 i.e. 2msg/sec|
 |eventHandling| omitted, since test system receives messages||
 |payload|payload to include in IPv6 packets|"Hello World"|
-
-| First Header  | Second Header |
-| ------------- | ------------- |
-| Content Cell  | Content Cell  |
-| Content Cell  | Content Cell  |
 
 </a>
