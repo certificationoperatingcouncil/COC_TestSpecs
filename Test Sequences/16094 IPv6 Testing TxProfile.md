@@ -7,6 +7,14 @@ May be used for 1609.4
 
 Initiation Sequence
 
+```puml
+Test_System->SUT: AddTxProfile
+Test_System->SUT: GetIPv6InterfaceInfo
+SUT->Test_System: Dot4ResponseInfo
+Test_System->SUT: SetIPv6Address
+Test_System->SUT: StartIPv6Tx
+```
+
 1. **Test System -> SUT**: send *AddTxProfile* - request to set TxProfile (Channel, Timeslot, DataRate, TxPower, etc) for IP communication [note1](#note1)
 2. **Test System -> SUT**: send *GetIPv6InterfaceInfo* - request to get IP address settings from SUT
 3. **SUT -> Test System**: send *Dot4ResponseInfo* - response message containing IP address settings for the radio WAVE interface available from the SUT
@@ -14,6 +22,11 @@ Initiation Sequence
 5. **Test System -> SUT**: send *StartIPv6Tx* - request for SUT to send IPv6/UDP packets to the Test System [note5](#note5)
 
 Termination Sequence
+
+```puml
+Test_System->SUT: StopIPv6Tx
+Test_System->SUT: DelTxProfile
+```
 
 6. **Test System -> SUT**: send *StopIPv6Tx* - terminate transmission of messages
 7. **Test System -> SUT**: send *DelTxProfile* - remove TxProfile
