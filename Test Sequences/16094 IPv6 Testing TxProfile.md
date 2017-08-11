@@ -36,4 +36,9 @@ Sample setup for *StartIPv6Tx*
 |eventHandling| omitted, since test system receives messages||
 |payload|payload to include in IPv6 packets|"Hello World"|
 
+| First Header  | Second Header |
+| ------------- | ------------- |
+| Content Cell  | Content Cell  |
+| Content Cell  | Content Cell  |
+
 </a>
