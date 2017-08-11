@@ -26,7 +26,7 @@ Note: Response and Exception messages are omitted
 Sample setup for *StartIPv6Tx*
 
 | parameter | explanation | example |
-| --- | --- |
+| --------- | ----------- | ------- |
 | radio | index to radio interface | radio1 |
 |interfaceName||wlan0|
 |destIpAddress|Link local IPv6 address of the test system|FE80::1|
