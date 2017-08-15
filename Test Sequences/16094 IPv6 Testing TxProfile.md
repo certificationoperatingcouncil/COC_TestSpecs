@@ -12,36 +12,43 @@ May be used for WAVEMCO-TSS&TP (1609.4): TP-16094-TXT-IP6-BV-01
 
 ```puml
 Test_System->SUT: SetInitialState
+SUT->Test_System: response
 Test_System->SUT: AddTxProfile
+SUT->Test_System: response
 Test_System->SUT: GetIPv6InterfaceInfo
 SUT->Test_System: Dot4ResponseInfo
 Test_System->SUT: SetIPv6Address
+SUT->Test_System: response
 Test_System->SUT: StartIPv6Tx
+SUT->Test_System: response
+...
 ```
 
-1. **Test System -> SUT**: send *SetInitialState* - request to reset SUT to the initial state
-2. **Test System -> SUT**: send *AddTxProfile* - request to set TxProfile (Channel, Timeslot, DataRate, TxPower, etc) for IP communication
-3. **Test System -> SUT**: send *GetIPv6InterfaceInfo* - request to get IP address settings from SUT
-4. **SUT -> Test System**: send *Dot4ResponseInfo* - response message containing IP address settings for the radio WAVE interface available from the SUT
-5. **Test System -> SUT**: send *SetIPv6Address* - request to set IP address, may be optional if Link Local IP address is already setup
-6. **Test System -> SUT**: send *StartIPv6Tx* - request for SUT to send IPv6/UDP packets to the Test System [note5](#note5)
+**Explanation** (response and exception messages are omitted)
+1. **Test System -> SUT**: send *SetInitialState* to reset SUT to the initial state
+2. **Test System -> SUT**: send *AddTxProfile* to set TxProfile (Channel, Timeslot, DataRate, TxPower, etc) for IP communication
+3. **Test System -> SUT**: send *GetIPv6InterfaceInfo* to get IP address settings from SUT
+4. **SUT -> Test System**: send *Dot4ResponseInfo* message containing IP address settings for the radio WAVE interface available from the SUT
+5. **Test System -> SUT**: send *SetIPv6Address* to set IP address, may be optional if Link Local IP address is already setup
+6. **Test System -> SUT**: send *StartIPv6Tx* for SUT to send IPv6/UDP packets to the Test System [note5](#note5)
 
 **Termination Sequence**
 
 ```puml
+...
 Test_System->SUT: StopIPv6Tx
+SUT->Test_System: response
 Test_System->SUT: DelTxProfile
+SUT->Test_System: response
 ```
 
-7. **Test System -> SUT**: send *StopIPv6Tx* - terminate transmission of messages
-8. **Test System -> SUT**: send *DelTxProfile* - remove TxProfile
-
-Note: Response and Exception messages are omitted
-
+7. **Test System -> SUT**: send *StopIPv6Tx* to terminate transmission of messages
+8. **Test System -> SUT**: send *DelTxProfile* to remove TxProfile
 
 
 <a name=note5>
 Sample setup for *StartIPv6Tx*
+</a>
 
 |Parameter|Explanation|Example|
 |---|---|---|
@@ -54,14 +61,12 @@ Sample setup for *StartIPv6Tx*
 |eventHandling| omitted, since test system receives messages||
 |payload|payload to include in IPv6 packets|"Hello World"|
 
-</a>
+---
 
 <a name=history>
 History
+</a>
 
 |Date|Changes|
 |---|---|
 |8/10/2017|Initial version|
-
-
-</a>
