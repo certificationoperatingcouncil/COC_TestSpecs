@@ -4,7 +4,7 @@
 Last updated 08/16/2017 ([history](#history))
 
 #### Reference
-May be used for WAVENS-TSS&TP (1609.3): TP-16093-IP-CFG-BV-02
+May be used for WAVENS-TSS&TP (1609.3): TP-16093-IP-CFG-BV-02, TP-16093-IP-CHG-BV-01, TP-16093-IP-CHG-BV-02
 
 **Initiation Sequence** [with images]( https://htmlpreview.github.io/?https://github.com/certificationoperatingcouncil/COC_TestSpecs/blob/master/Test%20Sequences/html/16093%20IPv6%20Address%20Setting%20Changing.html)
 
@@ -33,7 +33,7 @@ SUT->Test_System: Dot3ResponseInfo **(5)**
 1. **Test System -> SUT**: send *SetInitialState* to reset the SUT to the initial state
 2. **Test System -> SUT**: send *GetIPv6InterfaceInfo* to get IP address settings from the SUT for specific radio interface
 3. **SUT -> Test System**: send *Dot3ResponseInfo* response message containing IP address settings for the SUT radio WAVE interface [note3](#note3).
-4. **Test System -> SUT**: send *SetIPv6Address* to set address for the SUT radio WAVE interface [note4](#note4).
+4. **Test System -> SUT**: send *SetIPv6Address* to set or reset address for the SUT radio WAVE interface. See [note4](#note4) for parameter variations used in different test cases.
 5. **SUT -> Test System**: send *Dot3ResponseInfo* response message containing IP address settings for the SUT radio WAVE interface used to verify that the new IPv6 address is set.
 
 **Termination Sequence**
@@ -52,20 +52,35 @@ None
 
 **Note 4: sample setup for <a name=note4>*SetIPv6Address*</a>**
 
+For TP-16093-IP-CFG-BV-02
+
 |Parameter|Explanation|Example|
 |---|---|---|
 |radio|radio interface which generated the event|radio0|
 |interfaceName|interface name obtained from *Dot3ResponseInfo*|wlan0|
 |ipAddress|Global IPv6 address|2001::ef01|
 
+For TP-16093-IP-CHG-BV-01
+
+|Parameter|Explanation|Example|
+|---|---|---|
+|radio|radio interface which generated the event|radio0|
+|interfaceName|interface name obtained from *Dot3ResponseInfo*|wlan0|
+|ipAddress|Link-local IPv6 address|fe80::20d:1234:5678:9abc|
+_Note_: change of the Link-local IPv6 address may be preceded by the corresponding change in the MAC address.
+
+For TP-16093-IP-CHG-BV-02
+
+|Parameter|Explanation|Example|
+|---|---|---|
+|radio|radio interface which generated the event|radio0|
+|interfaceName|interface name obtained from *Dot3ResponseInfo*|wlan0|
+|ipAddress|omitted||
+
 ---
 
-<a name=history>
-History
+<a name=history> History </a>
 
 |Date|Changes|
 |---|---|
 |8/16/2017|Initial version|
-
-
-</a>
