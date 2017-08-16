@@ -3,7 +3,7 @@
 
 ### SUT sending IPv6 ping packets to the Test System
 
-Last updated 08/10/2017 ([history](#history))
+Last updated 08/16/2017 ([history](#history))
 
 #### Reference
 May be used for WAVENS-TSS&TP (1609.3): TP-16093-IP-COM-BV-01, TP-16093-IP-COM-BV-02
@@ -11,6 +11,15 @@ May be used for WAVENS-TSS&TP (1609.3): TP-16093-IP-COM-BV-01, TP-16093-IP-COM-B
 **Initiation Sequence** [with images]( https://htmlpreview.github.io/?https://github.com/certificationoperatingcouncil/COC_TestSpecs/blob/master/Test%20Sequences/html/16093%20IPv6%20Testing%20WSA.html)
 
 ```puml
+group Optional
+Test_System->SUT: sutCtrl.RequestSutAvailability
+SUT->Test_System: sutCtrl.response (resultCode=rcSuccess)
+Test_System->SUT: sutCtrl.RequestSutInfo
+SUT->Test_System: sutCtrl.SutResponseInfo
+Test_System->SUT: sutCtrl.SetTestId
+SUT->Test_System: response
+end
+|||
 Test_System->SUT: SetInitialState
 SUT->Test_System: response
 Test_System->SUT: AddUserService
@@ -135,7 +144,7 @@ History
 
 |Date|Changes|
 |---|---|
+|8/16/2017|Added optional message block|
 |8/14/2017|Initial version|
-
 
 </a>
