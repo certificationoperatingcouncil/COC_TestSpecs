@@ -8,7 +8,7 @@ Last updated 08/21/2017 ([history](#history))
 #### Reference
 May be used for WAVENS-TSS&TP (1609.3): TP-16093-WSM-MST-BV-01, TP-16093-WSM-MST-BV-02, TP-16093-WSM-ROP-BV-01, TP-16093-WSM-ROP-BV-02, TP-16093-WSM-ROP-BV-03, TP-16093-WSM-COM-BV-01, TP-16093-WSM-POP-BI-01
 
-**Initiation Sequence** [with images]( https://htmlpreview.github.io/?https://github.com/certificationoperatingcouncil/COC_TestSpecs/blob/master/Test%20Sequences/html/16093%WSM%20Tx%20Testing.html)
+**Initiation Sequence** [with images]( https://htmlpreview.github.io/?https://github.com/certificationoperatingcouncil/COC_TestSpecs/blob/master/Test%20Sequences/html/16093%20WSM%20Tx%20Testing.html)
 
 ```puml
 group Optional
