@@ -3,7 +3,7 @@
 
 ### SUT sending IPv6/UDP packets to the Test System
 
-Last updated 08/16/2017 ([history](#history))
+Last updated 08/22/2017 ([history](#history))
 
 #### Reference
 May be used for WAVEMCO-TSS&TP (1609.4): TP-16094-TXT-IP6-BV-01
@@ -30,6 +30,7 @@ Test_System->SUT: SetIPv6Address
 SUT->Test_System: response
 Test_System->SUT: StartIPv6Tx
 SUT->Test_System: response
+SUT->Test_System: UDP/IPv6 packet(s)
 ...
 ```
 
@@ -78,5 +79,6 @@ History
 
 |Date|Changes|
 |---|---|
+|8/22/2017|Added flow of UDP packets following StartIpv6Tx request|
 |8/16/2017|Added optional message block|
 |8/10/2017|Initial version|
