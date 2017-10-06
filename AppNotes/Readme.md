@@ -1,4 +1,14 @@
 
+## Update 20171006
+**RSU Requirements**
+
+FHWA RSU requirements - RSU 4.1 ver 5 - published April 28, 2017
+([FHWA-JPO-17-589.pdf](https://ntl.bts.gov/lib/61000/61700/61794/FHWA-JPO-17-589.pdf)) 
+
+Added __RSU\RSU-MIB.txt__ provided by Leidos on October 3, 2017. 
+Changes include updates based on vendor comments.
+This MIB file will superseed MIB included in RSU 4.1 ver 5.
+
 ## Update 20170516
 **1609.3-Guidance-Note-2-MIB-v1.1-20170515.pdf** 
 
