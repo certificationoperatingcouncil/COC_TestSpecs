@@ -1,0 +1,35 @@
+
+Manifest
+
+This zip contains several SAE DSRC J2734 messages in both the official *.uper format and in an *.xml format. These follow the precise format of the current J2735 standard. The ASN of that standard which is available from SAE was used for this effort. 
+
+Two supporting MS word documents are also present to explain the content of the messages. 
+
+One of these "Creating a MAP Message by hand" is an early effort in explain the overall process of MAP message creation. An excel file to support that is also present.  
+
+###
+Any DSRC decoder should be able to fully read these messages without issue. 
+###
+
+
+10/09/2017  02:58 PM         9,861,383 Creating a MAP Message by hand_r10.docx
+10/09/2017  02:11 PM            34,212 DixonMapTables_r10.xlsx
+10/09/2017  12:05 PM               289 Dixon_MapMessage_Full.uper
+10/09/2017  12:19 PM            22,353 Dixon_MapMessage_Full.xml
+10/03/2017  05:38 PM                34 EmptyIntersection.uper
+10/09/2017  12:23 PM             1,894 EmptyIntersection.xml
+10/03/2017  05:53 PM                48 EmptyIntersectionNamed.uper
+10/09/2017  12:26 PM             1,978 EmptyIntersectionNamed.xml
+10/03/2017  04:39 PM                 5 EmptyMapMessage.uper
+10/09/2017  12:22 PM               170 EmptyMapMessage.xml
+10/04/2017  11:51 AM               178 EmptyMapMessageWithLanes.uper
+10/09/2017  12:25 PM            14,663 EmptyMapMessageWithLanes.xml
+10/09/2017  02:59 PM                 0 Manifest.txt
+10/09/2017  11:36 AM               289 MapMessageWithLanesAndSomeNodes.uper
+10/09/2017  12:27 PM            22,351 MapMessageWithLanesAndSomeNodes.xml
+10/09/2017  02:08 PM            22,508 OtherSimpleJ2735messages.docx
+10/09/2017  01:10 PM               152 simple_RTCM.uper
+10/09/2017  12:44 PM                55 simple_SPAT.uper
+10/09/2017  02:00 PM                35 simple_TIM.uper
+
+Direct any comments to: DavidKelley@itsware.net Editor J2735.
