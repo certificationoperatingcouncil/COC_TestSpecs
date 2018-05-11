@@ -947,10 +947,11 @@ rsuMessageCountsByPsidCounts OBJECT-TYPE
 
 rsuMessageCountsByPsidRowStatus OBJECT-TYPE
     SYNTAX       RowStatus
-    MAX-ACCESS   read-create
+    MAX-ACCESS   read-only
     STATUS       current
     DESCRIPTION
-        "Create (4) or Destroy (6) rows"
+        "Returns the current status of this row.
+         Active = 1, notInService = 2, notReady = 3"
     ::= { rsuMessageCountsByPsidEntry 4 }
 
 rsuSystemStats OBJECT IDENTIFIER ::= { rsuMIB 16 }
