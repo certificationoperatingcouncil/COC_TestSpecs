@@ -39,15 +39,14 @@ RsuTableIndex ::= TEXTUAL-CONVENTION
     STATUS         current
     DESCRIPTION
         "A valid range of values for use in table indices"
-	SYNTAX         Integer32 (1..2147483647)
+    SYNTAX         Integer32 (1..2147483647)
 
 RsuPsidTC ::= TEXTUAL-CONVENTION
     DISPLAY-HINT   "4x"
     STATUS         current
     DESCRIPTION
         "PSID associated with a DSRC message."
-	SYNTAX         OCTET STRING (SIZE(1..4))
-	
+    SYNTAX         OCTET STRING (SIZE(1..4))
 
 rsuContMacAddress OBJECT-TYPE
     SYNTAX      MacAddress
@@ -79,7 +78,7 @@ rsuGpsStatus OBJECT-TYPE
     MAX-ACCESS   read-only
     STATUS       current
     DESCRIPTION
-        "Provides the number of GPS Satellites RSUxs internal GPS receiver is
+        "Provides the number of GPS Satellites RSU's internal GPS receiver is
          tracking"
     ::= { rsuMIB 3 }
 
@@ -88,8 +87,8 @@ rsuSRMStatusTable OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION
-        "Provides configuration information for each Store
-         Repeat message sent by an RSU."
+        "Provides configuration information for each Store & Repeat 
+         message to be sent by an RSU."
     ::= { rsuMIB 4 }
 
 rsuSRMStatusEntry OBJECT-TYPE
@@ -97,7 +96,7 @@ rsuSRMStatusEntry OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION
-        "A row describing RSU Store and Repeat Message Status"
+        "A row describing RSU Store and Repeat Message."
     INDEX   { rsuSRMIndex }
     ::= {rsuSRMStatusTable 1 }
 
@@ -128,7 +127,11 @@ rsuSRMPsid OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "Store and Repeat Message PSID"
+        "Store and Repeat Message PSID.
+         For those PSIDs less than 4 octets in length, The RSU should only 
+         require the significant octets be provided. For example, if the desired
+         PSID is 0x23, then the RSU should accept a supplied value of 0x23.
+         It should not need to be padded to a 4-octet length."
     ::= { rsuSRMStatusEntry 2 }
 
 rsuSRMDsrcMsgId OBJECT-TYPE
@@ -136,7 +139,9 @@ rsuSRMDsrcMsgId OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "Store and Repeat Message DSRC Message ID"
+        "DSRC Message ID as defined in J2735.
+         For the J2735 version 2016-03, some sample values are:
+         MAP = 18, SPAT = 19, BSM = 20"
     ::= { rsuSRMStatusEntry 3 }
 
 rsuSRMTxMode OBJECT-TYPE
@@ -170,7 +175,11 @@ rsuSRMDeliveryStart OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "Store and Repeat Message delivery start time"
+        "Store and Repeat Message delivery start time.
+         This time is supplied in the format of the first
+         6 octets in the DateAndTime field as defined in RFC2579.
+         Example: October 7, 2017 at 11:34 PM UTC would be encoded
+         as 07e10a071722"
     ::= { rsuSRMStatusEntry 7 }
 
 rsuSRMDeliveryStop OBJECT-TYPE
@@ -178,7 +187,8 @@ rsuSRMDeliveryStop OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "Store and Repeat Message delivery stop time"
+        "Store and Repeat Message delivery stop time.
+         See comment for rsuSRMDeliveryStart for the format."
     ::= { rsuSRMStatusEntry 8 }
 
 rsuSRMPayload OBJECT-TYPE
@@ -204,17 +214,16 @@ rsuSRMStatus OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-		"create and destroy row entry"
+        "Create (4) or Destroy (6) row entry"
     ::= { rsuSRMStatusEntry 11 }
 
-	
 rsuIFMStatusTable OBJECT-TYPE
     SYNTAX SEQUENCE OF RsuIFMStatusEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION
         "Provides configuration parameters for each Immediate
-        Forward message sent by an RSU."
+         Forward message sent by an RSU."
     ::= { rsuMIB 5 }
 
 rsuIFMStatusEntry OBJECT-TYPE
@@ -266,7 +275,7 @@ rsuIFMTxMode OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Immediate Forward Message Transmit Mode
-         Alternating or Continuous"
+         Alternating (1) or Continuous (0)"
     ::= { rsuIFMStatusEntry 4 }
 
 rsuIFMTxChannel OBJECT-TYPE
@@ -291,10 +300,9 @@ rsuIFMStatus OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-		"create and destroy row entry"
+        "Create (4) or Destroy (6) row entry"
     ::= { rsuIFMStatusEntry 7}
 
-	
 rsuSysObjectID OBJECT-TYPE
     SYNTAX       OBJECT IDENTIFIER
     MAX-ACCESS   read-only
@@ -304,17 +312,16 @@ rsuSysObjectID OBJECT-TYPE
         management subsystem contained in the entity. This value
         is allocated within the DSRC subtree (1.0.15628.4) and
         provides an easy and unambiguous means for determining
-        `what kind of box' is being managed. 1.0.15628.4.1.6.0
+        'what kind of box' is being managed. 1.0.15628.4.1.6.0
         indicates an RSU"
     ::= { rsuMIB 6 }
 
-	
 rsuDsrcForwardTable OBJECT-TYPE
     SYNTAX SEQUENCE OF RsuDsrcForwardEntry
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION
-        "contains the DSRC PSID being forwarded to a network host,
+        "Contains the DSRC PSID being forwarded to a network host,
          the IP Address and port number of the destination host, as
          well as other configuration parameters as defined."
     ::= { rsuMIB 7}
@@ -347,7 +354,7 @@ rsuDsrcFwdIndex OBJECT-TYPE
     MAX-ACCESS   not-accessible
     STATUS       current
     DESCRIPTION
-        "Message Forward Message Index "
+        "DSRC Message Forward Table Index "
     ::= { rsuDsrcForwardEntry 1 }
 
 rsuDsrcFwdPsid OBJECT-TYPE
@@ -387,8 +394,8 @@ rsuDsrcFwdRssi OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "Minimum Received Signal Strengh Level of DSRC Messages should be
-        Forwarded to server"
+        "Minimum signal strength level of received DSRC messages that are to
+         be forwarded to the server"
     ::= { rsuDsrcForwardEntry 6 }
 
 rsuDsrcFwdMsgInterval OBJECT-TYPE
@@ -396,7 +403,11 @@ rsuDsrcFwdMsgInterval OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "Interval with which RSU forwards DSRC Messages to Server"
+        "Interval of messages which RSU forwards to Server.
+         An interval of 1 means the RSU will forward every message.
+         An interval of 2 means it will forward every other message (50% of
+         messages received), and an interval of 5 means it will forward every 
+         fifth message (20% of messages received)."
     ::= { rsuDsrcForwardEntry 7 }
 
 rsuDsrcFwdDeliveryStart OBJECT-TYPE
@@ -404,7 +415,8 @@ rsuDsrcFwdDeliveryStart OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "Start time for RSU to start forwarding DSRC Messages to Server"
+        "Start time for RSU to start forwarding DSRC Messages to Server
+        See comment for rsuSRMDeliveryStart for the format."
     ::= { rsuDsrcForwardEntry 8 }
 
 rsuDsrcFwdDeliveryStop OBJECT-TYPE
@@ -412,7 +424,8 @@ rsuDsrcFwdDeliveryStop OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "Stop time for RSU to stop forwarding DSRC Messages to Server"
+        "Stop time for RSU to stop forwarding DSRC Messages to Server
+        See comment for rsuSRMDeliveryStart for the format."
     ::= { rsuDsrcForwardEntry 9 }
 
 rsuDsrcFwdEnable OBJECT-TYPE
@@ -420,7 +433,8 @@ rsuDsrcFwdEnable OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "Stop time for RSU to stop forwarding DSRC Messages to Server"
+        "Enable (1) or Disable (0) forwarding DSRC messages to the
+        defined address."
     ::= { rsuDsrcForwardEntry 10 }
 
 rsuDsrcFwdStatus OBJECT-TYPE
@@ -428,7 +442,7 @@ rsuDsrcFwdStatus OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "create and destroy row entry "
+        "Create (4) or Destroy (6) row entry "
     ::= { rsuDsrcForwardEntry 11 }
 
 rsuGpsOutput OBJECT IDENTIFIER ::= { rsuMIB 8 }
@@ -438,7 +452,7 @@ rsuGpsOutputPort OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "GPS Out External Server Port Number"
+        "Remote host port number to which to send the GPS string."
     ::= { rsuGpsOutput 1 }
 
 rsuGpsOutputAddress OBJECT-TYPE
@@ -463,7 +477,7 @@ rsuGpsOutputInterval OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Interval at which to send the GPS GPGGA NMEA String
-        to external Server in seconds."
+        to external server, in seconds."
     ::= { rsuGpsOutput 4 }
 
 rsuGpsOutputString OBJECT-TYPE
@@ -498,7 +512,7 @@ rsuGpsRefElv OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Contains the actual GPS elevation for validation of
-		 reported GPS elevation in centimeters."
+         reported GPS elevation, in centimeters."
     ::= { rsuGpsOutput 8 }
 
 rsuGpsMaxDeviation OBJECT-TYPE
@@ -517,7 +531,7 @@ rsuInterfaceLogTable OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Provides configuration information for capturing log files
-        for each communication Interface x represents the
+         for each communication interface. The index represents the
          interface for which these configurations will apply"
     ::= { rsuMIB 9 }
 
@@ -537,24 +551,22 @@ RsuInterfaceLogEntry ::= SEQUENCE {
         rsuIfaceMaxFileTime          Integer32,
         rsuIfaceLogByDir             INTEGER,
         rsuIfaceName                 DisplayString
-   }
+}
 
 rsuIfaceLogIndex OBJECT-TYPE
     SYNTAX       RsuTableIndex
     MAX-ACCESS   not-accessible
     STATUS       current
     DESCRIPTION
-        "Interface Logging Index "
+        "Interface Logging Index"
     ::= { rsuInterfaceLogEntry 1 }
 
 rsuIfaceGenerate OBJECT-TYPE
-    SYNTAX INTEGER { off(0),
-	                 on(1) }
+    SYNTAX       INTEGER { off(0), on(1) }
     MAX-ACCESS read-write
     STATUS current
     DESCRIPTION
-        "Enable / Disable interface logging. '0x00 = OFF' and
-        '0x01 = ON'"
+        "Enable (1) or Disable (0) interface logging."
     ::= { rsuInterfaceLogEntry 2 }
 
 rsuIfaceMaxFileSize OBJECT-TYPE
@@ -562,7 +574,7 @@ rsuIfaceMaxFileSize OBJECT-TYPE
     MAX-ACCESS read-write
     STATUS current
     DESCRIPTION
-        "Maximum Interface Log File Size in Mega Bytes, 
+        "Maximum Interface Log File Size in megabytes,
          default is 5."
     ::= { rsuInterfaceLogEntry 3 }
 
@@ -571,7 +583,7 @@ rsuIfaceMaxFileTime OBJECT-TYPE
     MAX-ACCESS read-write
     STATUS current
     DESCRIPTION
-        "Maximum Collection time for Interface Logging in hrs,
+        "Maximum Collection time for Interface Logging in hours,
          default is 24."
     ::= { rsuInterfaceLogEntry 4 }
 
@@ -588,7 +600,8 @@ rsuIfaceName OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "Holds the name of the interface."
+        "Identifies the name of the interface for which the logs defined
+         by this row are to be managed."
     ::= { rsuInterfaceLogEntry 6 }
 
 rsuSecCredReq OBJECT-TYPE
@@ -596,9 +609,9 @@ rsuSecCredReq OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-	"rovides configuration parameters for when an RSU should
-        request new 1609.2 security credentials in days before
-        existing credentials expire"
+        "Provides configuration parameters for when an RSU should
+         request new 1609.2 security credentials, in days, before
+         existing credentials expire"
     ::= { rsuMIB 10 }
 
 rsuSecCredAttachInterval OBJECT-TYPE
@@ -607,8 +620,8 @@ rsuSecCredAttachInterval OBJECT-TYPE
     STATUS current
     DESCRIPTION
         "Provides configuration parameters for when an RSU will attach
-        1609.2 security credentials to a WAVE Short Message Protocol
-        (WSMP) Message"
+         1609.2 security credentials to a WAVE Short Message Protocol
+         (WSMP) Message"
     ::= { rsuMIB 11 }
 
 rsuDsrcChannelModeTable OBJECT-TYPE
@@ -616,10 +629,10 @@ rsuDsrcChannelModeTable OBJECT-TYPE
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION
-    "Provides Continuous and Alternating Channel Mode
-        configurations for each DSRC interface.
-        x represents the interface for which these
-        configurations will apply"
+        "Provides Continuous and Alternating Channel Mode
+         configurations for each DSRC interface.
+         The index value represents the interface for which these
+         configurations will apply"
     ::= { rsuMIB 12  }
 
 rsuDsrcChannelModeEntry OBJECT-TYPE
@@ -660,8 +673,7 @@ rsuDCMMode OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-		"DSRC Channel Mode. '0x00 = Continuous Mode'
-         and, '0x01 = Alternating Mode'"
+        "DSRC Channel Mode. Continuous Mode(0), Alternating Mode (1)"
     ::= { rsuDsrcChannelModeEntry 3 }
 
 rsuDCMCCH OBJECT-TYPE
@@ -707,7 +719,7 @@ RsuWsaServiceEntry ::= SEQUENCE {
         rsuWsaPort                  Integer32,
         rsuWsaChannel               Integer32,
         rsuWsaStatus                RowStatus
-    }
+}
 
 rsuWsaIndex OBJECT-TYPE
     SYNTAX       RsuTableIndex
@@ -770,7 +782,7 @@ rsuWsaStatus OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-		"create or destroy rows"
+		"Create (4) or Destroy (6) rows"
     ::= { rsuWsaServiceEntry 8 }
 
 rsuWraConfiguration OBJECT IDENTIFIER ::= { rsuMIB 14 }
@@ -785,10 +797,13 @@ rsuWraIpPrefix OBJECT-TYPE
 
 rsuWraIpPrefixLength OBJECT-TYPE
     SYNTAX       OCTET STRING (SIZE(1))
+    DISPLAY-HINT "1x"
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "Length of IPv6 address prefix of WRA Service Advertised "
+        "Length of IPv6 address prefix of WRA Service Advertised.
+         A 64-bit prefix is '0x40', a 60-bit prefix is '0x3c' and a
+         54-bit prefix is '0x34'"
     ::= { rsuWraConfiguration 2 }
 
 rsuWraGateway OBJECT-TYPE
@@ -904,7 +919,7 @@ RsuMessageCountsByPsidEntry ::= SEQUENCE {
     rsuMessageCountsByPsidId           RsuPsidTC,
     rsuMessageCountsByPsidCounts       Counter32,
     rsuMessageCountsByPsidRowStatus    RowStatus
-    }
+}
 
 rsuMessageCountsByPsidIndex OBJECT-TYPE
     SYNTAX       RsuTableIndex
@@ -919,8 +934,7 @@ rsuMessageCountsByPsidId OBJECT-TYPE
     MAX-ACCESS   read-only
     STATUS       current
     DESCRIPTION
-        "Contains the number of seconds that have elapsed 
-		 since the RSU was last powered on."
+        "Contains the PSID for this row of message counts."
     ::= { rsuMessageCountsByPsidEntry 2 }
 
 rsuMessageCountsByPsidCounts OBJECT-TYPE
@@ -928,8 +942,7 @@ rsuMessageCountsByPsidCounts OBJECT-TYPE
     MAX-ACCESS   read-only
     STATUS       current
     DESCRIPTION
-        "Contains the number of seconds that have elapsed 
-		 since the RSU was last powered on."
+        "Contains the number of messages sent or received for this PSID"
     ::= { rsuMessageCountsByPsidEntry 3 }
 
 rsuMessageCountsByPsidRowStatus OBJECT-TYPE
@@ -937,10 +950,9 @@ rsuMessageCountsByPsidRowStatus OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-		"create or destroy rows"
+        "Create (4) or Destroy (6) rows"
     ::= { rsuMessageCountsByPsidEntry 4 }
 
-	
 rsuSystemStats OBJECT IDENTIFIER ::= { rsuMIB 16 }
 
 rsuTimeSincePowerOn OBJECT-TYPE
@@ -957,7 +969,7 @@ rsuTotalRunTime OBJECT-TYPE
     MAX-ACCESS   read-only
     STATUS       current
     DESCRIPTION
-        "Contains the number of seconds that have elapsed 
+        "Contains the number of seconds that the system has been operational
          since the RSU was first powered on."
     ::= { rsuSystemStats 2 }
 
@@ -1061,7 +1073,7 @@ rsuNotifyIpAddress OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Contains the IP address of the SNMP Manager that will
-         receive the SNMP Notifications."
+         receive the SNMP Notifications. (SNMP traps)"
     ::= { rsuSysSettings 2 }
 
 rsuNotifyPort OBJECT-TYPE
@@ -1070,7 +1082,7 @@ rsuNotifyPort OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Contains the port number of the SNMP Manager that will
-		 receive the SNMP Notifications.  Default is 162."
+         receive the SNMP Notifications. (SNMP traps) Default is 162."
     ::= { rsuSysSettings 3 }
 
 rsuSysLogCloseDay OBJECT-TYPE
@@ -1081,7 +1093,7 @@ rsuSysLogCloseDay OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Contains the day of the week on which to close the system
-		 log file Default is Sunday."
+         log file. Default is Sunday."
     ::= { rsuSysSettings 4 }
 
 rsuSysLogCloseTime OBJECT-TYPE
@@ -1090,7 +1102,10 @@ rsuSysLogCloseTime OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Contains the time of day at which to close the system
-		 log file.  Default is 23:59:00 UTC."
+         log file.  Default is 23:59:00 UTC.
+         The format of this time should be provided as a 3-octet
+         field containing HHMMSS. Example: The default time 23:59:00
+         would be given as 173b00."
     ::= { rsuSysSettings 5 }
 
 rsuSysLogDeleteDay OBJECT-TYPE
@@ -1100,8 +1115,8 @@ rsuSysLogDeleteDay OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "Contains the day of the week on which to close the system 
-		 log file Default is Sunday."
+        "Contains the day of the week on which to delete the old system
+         log files. Default is Sunday."
     ::= { rsuSysSettings 6 }
 
 rsuSysLogDeleteAge OBJECT-TYPE
@@ -1109,7 +1124,7 @@ rsuSysLogDeleteAge OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "Contains the age at which to delete old log files.
+        "Contains the minimum age at which to delete old log files.
          Default is 30 days."
     ::= { rsuSysSettings 7 }
 -- System Status
@@ -1117,14 +1132,14 @@ rsuSysLogDeleteAge OBJECT-TYPE
 rsuSystemStatus OBJECT IDENTIFIER ::= { rsuMIB 19}
 
 rsuChanStatus OBJECT-TYPE
-    SYNTAX INTEGER {
-        bothOp (0), --both Continuous and Alternating modes are operational
-        altOp (1),  --Alternating mode is operational,
-                    --Continuous mode is not operational
-        contOp (2), --Continuous mode is operational,
-                    --Alternating mode is not operational
-        noneOp (3)  --neither Continuous nor Alternating mode is operational
-    }
+    SYNTAX  INTEGER {
+            bothOp (0), --both Continuous and Alternating modes are operational
+            altOp (1),  --Alternating mode is operational,
+                        --Continuous mode is not operational
+            contOp (2), --Continuous mode is operational,
+                        --Alternating mode is not operational
+            noneOp (3)  --neither Continuous nor Alternating mode is operational
+            }
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION
@@ -1176,19 +1191,14 @@ rsuSdwPort OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Contains the port on which the Situation Data Warehouse
-		 will receive requrests from the RSU."
+         will receive requests from the RSU."
     ::= { rsuSitData 5 }
-	
-	
 -- RSU Set
 
 rsuSet OBJECT IDENTIFIER ::= { rsuMIB 21 }
 
 rsuSetRole OBJECT-TYPE
-    SYNTAX       INTEGER {
-                        master (0),
-                        slave (1)
-                }
+    SYNTAX       INTEGER { master (0), slave (1) }
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
@@ -1196,10 +1206,7 @@ rsuSetRole OBJECT-TYPE
     ::= { rsuSet 1 }
 
 rsuSetEnable OBJECT-TYPE
-    SYNTAX       INTEGER {
-                        independent (0),
-                        set (1)
-                }
+    SYNTAX       INTEGER { independent (0), set (1) }
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
@@ -1235,7 +1242,7 @@ rsuSetSlaveIndex OBJECT-TYPE
     MAX-ACCESS   not-accessible
     STATUS       current
     DESCRIPTION
-        " Slave RSU index "
+        "Slave RSU index"
     ::= { rsuSetSlaveEntry 1 }
 
 rsuSetSlaveIpAddress OBJECT-TYPE
@@ -1252,24 +1259,20 @@ rsuSetSlaveRowStatus OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "create or destroy rows"
+        "Create (4) or Destroy (6) rows"
     ::= { rsuSetSlaveEntry 3 }
 -- RSU Mode
 
 rsuMode OBJECT-TYPE
-    SYNTAX      INTEGER {
-                       standby  (2), 
-                       operate  (4),
-                       off      (16)
-               }
+    SYNTAX       INTEGER { standby (2), operate (4), off (16) }
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
         "Specifies the current mode of operation of the RSU."
     ::= { rsuMIB 99 }
 -- Asynchronous Messages
-rsuAsync OBJECT IDENTIFIER ::= { rsuMIB 100 }
 
+rsuAsync OBJECT IDENTIFIER ::= { rsuMIB 100 }
 -- Notifications
 
 rsuNotifications OBJECT IDENTIFIER ::= { rsuAsync 0 }
@@ -1484,12 +1487,12 @@ rsuGpsNmeaNotifyInterval OBJECT-TYPE
 
 rsuAlertLevel OBJECT-TYPE
     SYNTAX       INTEGER {
-                  info(0),
-                  notice(1),
-                  warning(2),
-                  error(3),
-                  critical(4)
-                  }
+                            info(0),
+                            notice(1),
+                            warning(2),
+                            error(3),
+                            critical(4)
+                        }
     MAX-ACCESS   accessible-for-notify
     STATUS       current
     DESCRIPTION
