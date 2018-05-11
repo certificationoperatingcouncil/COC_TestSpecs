@@ -782,7 +782,7 @@ rsuWsaStatus OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-		"Create (4) or Destroy (6) rows"
+        "Create (4) or Destroy (6) rows"
     ::= { rsuWsaServiceEntry 8 }
 
 rsuWraConfiguration OBJECT IDENTIFIER ::= { rsuMIB 14 }
