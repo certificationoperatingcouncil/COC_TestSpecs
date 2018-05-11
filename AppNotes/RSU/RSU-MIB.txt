@@ -990,12 +990,12 @@ rsuLastLoginUser OBJECT-TYPE
     ::= { rsuSystemStats 4 }
 
 rsuLastLoginSource OBJECT-TYPE
-    SYNTAX       DisplayString (SIZE(0..32))
+    SYNTAX       DisplayString (SIZE(0..64))
     MAX-ACCESS   read-only
     STATUS       current
     DESCRIPTION
-        "Contains name or address of the remote host from which
-         the last user logged in."
+        "Contains the hostname or IP address of the remote host 
+         from which the last user logged in."
     ::= { rsuSystemStats 5 }
 
 rsuLastRestartTime OBJECT-TYPE
