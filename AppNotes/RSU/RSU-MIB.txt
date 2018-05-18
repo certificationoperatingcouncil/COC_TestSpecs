@@ -9,12 +9,15 @@ IMPORTS
 
 
 rsuMIB MODULE-IDENTITY
-    LAST-UPDATED    "201710020000Z"
+    LAST-UPDATED    "201805180000Z"
     ORGANIZATION    "US-DOT"
     CONTACT-INFO    "postal:    TBD
                      email:     TBD@TBD.com"
     DESCRIPTION     "Leidos implementation RSU 4.1 MIB based on
                      Savari and Cohda implementation of RSU 4.0"
+    REVISION        "201805180000Z"
+    DESCRIPTION     "Contribution from WSP and 7layers to RSU 4.1 MIB
+                     Cleanup and expansion of comments to remove ambiguity"
     REVISION        "201710020000Z"
     DESCRIPTION     "Allow RsuPsidTC length up to 4,
                      rsuWsaProviderContext length to 32 (match dot3),
@@ -45,7 +48,13 @@ RsuPsidTC ::= TEXTUAL-CONVENTION
     DISPLAY-HINT   "4x"
     STATUS         current
     DESCRIPTION
-        "PSID associated with a DSRC message."
+        "PSID associated with a DSRC message.
+        PSID is formatted per IEEE1609.12-2016 Table 2 HEX representation.
+        BSM = 0x20, TIM = 0x83, WSA = 0x87, IProuting = 0x1020407E.
+        For those PSIDs less than 4 octets in length, The RSU should only 
+        require the significant octets be provided. For example, if the desired
+        PSID is 0x20, then the RSU should accept a supplied value of 0x20.
+        It should not need to be padded to a 4-octet length."
     SYNTAX         OCTET STRING (SIZE(1..4))
 
 rsuContMacAddress OBJECT-TYPE
@@ -127,11 +136,7 @@ rsuSRMPsid OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "Store and Repeat Message PSID.
-         For those PSIDs less than 4 octets in length, The RSU should only 
-         require the significant octets be provided. For example, if the desired
-         PSID is 0x23, then the RSU should accept a supplied value of 0x23.
-         It should not need to be padded to a 4-octet length."
+        "Store and Repeat Message PSID."
     ::= { rsuSRMStatusEntry 2 }
 
 rsuSRMDsrcMsgId OBJECT-TYPE
@@ -141,7 +146,7 @@ rsuSRMDsrcMsgId OBJECT-TYPE
     DESCRIPTION
         "DSRC Message ID as defined in J2735.
          For the J2735 version 2016-03, some sample values are:
-         MAP = 18, SPAT = 19, BSM = 20"
+         MAP = 18, SPAT = 19, TIM = 31"
     ::= { rsuSRMStatusEntry 3 }
 
 rsuSRMTxMode OBJECT-TYPE
@@ -150,7 +155,7 @@ rsuSRMTxMode OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "DSRC mode set for Store and Repeat Message transmit,
-         Continuous or Alternating"
+         Continuous (0) or Alternating (1)"
     ::= { rsuSRMStatusEntry 4 }
 
 rsuSRMTxChannel OBJECT-TYPE
@@ -196,7 +201,8 @@ rsuSRMPayload OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "Payload of Store and Repeat message.
+        "Payload of Store and Repeat message. 
+        For SAE J2735-032016 messages, this object includes encoded MessageFrame.
          Length limit derived from dot3MIB."
     ::= { rsuSRMStatusEntry 9 }
 
@@ -258,7 +264,7 @@ rsuIFMPsid OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "Immediate Forward Message PSID"
+        "Immediate Forward Message PSID."
     ::= { rsuIFMStatusEntry 2}
 
 rsuIFMDsrcMsgId OBJECT-TYPE
@@ -266,7 +272,8 @@ rsuIFMDsrcMsgId OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "Immediate Forward Message DSRC Message ID"
+        "Immediate Forward Message DSRC Message ID
+        See clarifications in rsuSRMDsrcMsgId"
     ::= { rsuIFMStatusEntry 3 }
 
 rsuIFMTxMode OBJECT-TYPE
@@ -312,7 +319,7 @@ rsuSysObjectID OBJECT-TYPE
         management subsystem contained in the entity. This value
         is allocated within the DSRC subtree (1.0.15628.4) and
         provides an easy and unambiguous means for determining
-        'what kind of box' is being managed. 1.0.15628.4.1.6.0
+        'what kind of box' is being managed. Presence of 1.0.15628.4.1.6.0
         indicates an RSU"
     ::= { rsuMIB 6 }
 
@@ -370,7 +377,9 @@ rsuDsrcFwdDestIpAddr OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "DSRC Message Forward Destination Server IP address"
+        "IPv6 address of the Remote Server for DSRC Message Forwarding Destination.
+        Example: IPv6 address 2001:333:22:ef::1 would be encoded as 
+        20010333002200EF0000000000000001"
     ::= { rsuDsrcForwardEntry 3 }
 
 rsuDsrcFwdDestPort OBJECT-TYPE
@@ -394,7 +403,7 @@ rsuDsrcFwdRssi OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "Minimum signal strength level of received DSRC messages that are to
+        "Minimum signal strength level (in dBm units) of received DSRC messages that are to
          be forwarded to the server"
     ::= { rsuDsrcForwardEntry 6 }
 
@@ -460,7 +469,8 @@ rsuGpsOutputAddress OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "Remote host IPv6 address to which to send the GPS string"
+        "Remote host IPv6 address to which to send the GPS string.
+        See example in rsuDsrcFwdDestIpAddr"
     ::= { rsuGpsOutput 2 }
 
 rsuGpsOutputInterface OBJECT-TYPE
@@ -493,7 +503,7 @@ rsuGpsRefLat OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "Contains the actual GPS latitude for validation of
+        "Contains the reference GPS latitude for validation of
          reported GPS latitude in 10^-7 degrees."
     ::= { rsuGpsOutput 6 }
 
@@ -502,7 +512,7 @@ rsuGpsRefLon OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "Contains the actual GPS longitude for validation of
+        "Contains the reference GPS longitude for validation of
          reported GPS longitude in 10^-7 degrees."
     ::= { rsuGpsOutput 7 }
 
@@ -511,8 +521,9 @@ rsuGpsRefElv OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "Contains the actual GPS elevation for validation of
-         reported GPS elevation, in centimeters."
+        "Contains the reference GPS elevation (in centimeters). 
+        The reference GPS elevation is compared to the 
+         reported GPS reading from the built-in GPS receiver"
     ::= { rsuGpsOutput 8 }
 
 rsuGpsMaxDeviation OBJECT-TYPE
@@ -521,8 +532,9 @@ rsuGpsMaxDeviation OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Contains the maximum allowable deviation (radius in centimeters)
-         for comparison between the reported GPS coordinates and the
-         static GPS coordinates."
+         for comparison between the actual 3D GPS coordinates of the RSU unit 
+         (latitude, longitude and elevation) and the reference GPS coordinates 
+         in rsuGpsRefLat, rsuGpsRefLon and rsuGpsRefElv."
     ::= { rsuGpsOutput 9 }
 
 rsuInterfaceLogTable OBJECT-TYPE
@@ -623,6 +635,8 @@ rsuSecCredAttachInterval OBJECT-TYPE
          1609.2 security credentials to a WAVE Short Message Protocol
          (WSMP) Message"
     ::= { rsuMIB 11 }
+-- DK units are undefined
+-- DK the value is determined by security profile and varies by the type of WSMP messages
 
 rsuDsrcChannelModeTable OBJECT-TYPE
     SYNTAX SEQUENCE OF RsuDsrcChannelModeEntry
@@ -673,7 +687,8 @@ rsuDCMMode OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "DSRC Channel Mode. Continuous Mode(0), Alternating Mode (1)"
+        "DSRC Channel Mode. Continuous Mode(0), Alternating Mode (1)
+        For Continous Mode, specify Channel number in rsuDCMCCH."
     ::= { rsuDsrcChannelModeEntry 3 }
 
 rsuDCMCCH OBJECT-TYPE
@@ -681,7 +696,8 @@ rsuDCMCCH OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "Control Channel number to use - applies in Alternating Mode"
+        "Channel number used as Control Channel. In Alternating Mode
+        this channel will be used during time slot 0."
     ::= { rsuDsrcChannelModeEntry 4 }
 
 rsuDCMSCH OBJECT-TYPE
@@ -689,7 +705,8 @@ rsuDCMSCH OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "Service Channel number to use"
+        "Channel number used as Service Channel. In Alternating Mode 
+        this channel will be used during time slot 1."
     ::= { rsuDsrcChannelModeEntry 5 }
 
 rsuWsaServiceTable OBJECT-TYPE
@@ -774,7 +791,7 @@ rsuWsaChannel OBJECT-TYPE
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "The number of the channel on which the advertised service is provided."
+        "The Channel number on which the advertised service is provided."
     ::= { rsuWsaServiceEntry 7 }
 
 rsuWsaStatus OBJECT-TYPE
@@ -819,11 +836,11 @@ rsuWraPrimaryDns OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "IPv6 address of Primary DNS Server of WRA Service Advertised"
+        "IPv6 address of Primary DNS Server in WSA WRA structure"
     ::= { rsuWraConfiguration 4 }
 
 rsuMessageStats OBJECT IDENTIFIER ::= { rsuMIB 15 }
-
+-- DK: need reference to radio if RSU has multiple radios
 rsuAltSchMsgSent OBJECT-TYPE
     SYNTAX       Counter32
     MAX-ACCESS   read-only
@@ -926,7 +943,7 @@ rsuMessageCountsByPsidIndex OBJECT-TYPE
     MAX-ACCESS   not-accessible
     STATUS       current
     DESCRIPTION
-        "WSA Service Index"
+        "Message Count Index"
     ::= { rsuMessageCountsByPsidEntry 1 }
 
 rsuMessageCountsByPsidId OBJECT-TYPE
@@ -970,8 +987,8 @@ rsuTotalRunTime OBJECT-TYPE
     MAX-ACCESS   read-only
     STATUS       current
     DESCRIPTION
-        "Contains the number of seconds that the system has been operational
-         since the RSU was first powered on."
+        "Contains the total number of seconds that the system has been operational
+        (i.e. in Operate or Standby states) since the RSU was first powered on."
     ::= { rsuSystemStats 2 }
 
 rsuLastLoginTime OBJECT-TYPE
@@ -979,7 +996,7 @@ rsuLastLoginTime OBJECT-TYPE
     MAX-ACCESS   read-only
     STATUS       current
     DESCRIPTION
-        "Contains the time when the last user logged in."
+        "Contains the date/time when the last user logged in."
     ::= { rsuSystemStats 3 }
 
 rsuLastLoginUser OBJECT-TYPE
@@ -987,7 +1004,7 @@ rsuLastLoginUser OBJECT-TYPE
     MAX-ACCESS   read-only
     STATUS       current
     DESCRIPTION
-        "Contains the name of the last user to log in."
+        "Contains the username of the last user to log in."
     ::= { rsuSystemStats 4 }
 
 rsuLastLoginSource OBJECT-TYPE
@@ -1004,7 +1021,7 @@ rsuLastRestartTime OBJECT-TYPE
     MAX-ACCESS   read-only
     STATUS       current
     DESCRIPTION
-        "Contains the time when the RSU process was last started."
+        "Contains the Date/Time when the RSU was last restarted."
     ::= { rsuSystemStats 6 }
 
 rsuIntTemp OBJECT-TYPE
@@ -1012,7 +1029,7 @@ rsuIntTemp OBJECT-TYPE
     MAX-ACCESS   read-only
     STATUS       current
     DESCRIPTION
-        "Contains the internal temperature of the RSU in degrees Celsius."
+        "Contains the internal temperature of the RSU in degrees of Celsius."
     ::= { rsuSystemStats 7 }
 
 rsuSysDescription OBJECT IDENTIFIER ::= { rsuMIB 17 }
@@ -1022,7 +1039,7 @@ rsuMibVersion OBJECT-TYPE
     MAX-ACCESS   read-only
     STATUS       current
     DESCRIPTION
-        "Contains the version of this MIB."
+        "Contains the version of this MIB supported by this RSU."
     ::= { rsuSysDescription 1 }
 
 rsuFirmwareVersion OBJECT-TYPE
@@ -1064,8 +1081,8 @@ rsuTxPower OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "Sets the output power of the RSU antennas as a
-         percentage of full strength.  Default is 100% of 33dBm."
+        "Sets the actual output power of the RSU antennas as a
+         percentage of full power supported by this RSU."
     ::= { rsuSysSettings 1 }
 
 rsuNotifyIpAddress OBJECT-TYPE
@@ -1073,7 +1090,7 @@ rsuNotifyIpAddress OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "Contains the IP address of the SNMP Manager that will
+        "Contains the IPv6 address of the SNMP Manager that will
          receive the SNMP Notifications. (SNMP traps)"
     ::= { rsuSysSettings 2 }
 
@@ -1383,7 +1400,7 @@ rsuMsgFileIntegrityMsg OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Contains the error message detailing an Active Message
-         Integrity error "
+         Integrity error."
     ::= { rsuNotificationObjects 1 }
 
 rsuSecStorageIntegrityMsg OBJECT-TYPE
@@ -1392,7 +1409,7 @@ rsuSecStorageIntegrityMsg OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Contains the error message detailing a secure storage
-         Integrity error "
+         Integrity error."
     ::= { rsuNotificationObjects 2 }
 
 rsuTamperAlertMsg OBJECT-TYPE
@@ -1401,7 +1418,7 @@ rsuTamperAlertMsg OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Contains the error message detailing an enclosure
-         tampering error "
+         tampering error."
     ::= { rsuNotificationObjects 3 }
 
 rsuAuthMsg OBJECT-TYPE
@@ -1409,7 +1426,7 @@ rsuAuthMsg OBJECT-TYPE
     MAX-ACCESS   accessible-for-notify
     STATUS       current
     DESCRIPTION
-        "Contains the error message detailing an authorization error "
+        "Contains the error message detailing an authorization error."
     ::= { rsuNotificationObjects 4 }
 
 rsuSignatureVerifyMsg OBJECT-TYPE
@@ -1418,7 +1435,7 @@ rsuSignatureVerifyMsg OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Contains the error message detailing a signature verification
-         error "
+         error."
     ::= { rsuNotificationObjects 5 }
 
 rsuAccessMsg OBJECT-TYPE
@@ -1427,7 +1444,7 @@ rsuAccessMsg OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Contains the error message detailing an error or rejection
-         due to Access Control List rules "
+         due to Access Control List rules."
     ::= { rsuNotificationObjects 6 }
 
 rsuTimeSourceLostMsg OBJECT-TYPE
@@ -1436,7 +1453,7 @@ rsuTimeSourceLostMsg OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Contains the error message indicating a time source
-         was lost"
+         was lost."
     ::= { rsuNotificationObjects 7 }
 
 rsuClockSkewMsg OBJECT-TYPE
@@ -1445,7 +1462,7 @@ rsuClockSkewMsg OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Contains the error message detailing that a vendor-defined
-         clock skew rate was exceeded "
+         clock skew rate was exceeded."
     ::= { rsuNotificationObjects 8 }
 
 rsuTimeSourceMismatchMsg OBJECT-TYPE
@@ -1454,7 +1471,7 @@ rsuTimeSourceMismatchMsg OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Contains the error message detailing a deviation between
-         two time sources that exceeds a vendor-defined threshold "
+         two time sources that exceeds a vendor-defined threshold."
     ::= { rsuNotificationObjects 9 }
 
 rsuGpsAnomalyMsg OBJECT-TYPE
@@ -1463,7 +1480,7 @@ rsuGpsAnomalyMsg OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Contains the error message detailing an anomaly that was
-         detected in the GPS signal "
+         detected in the GPS signal."
     ::= { rsuNotificationObjects 10 }
 
 rsuGpsDeviationMsg OBJECT-TYPE
@@ -1473,7 +1490,7 @@ rsuGpsDeviationMsg OBJECT-TYPE
     DESCRIPTION
         "Contains the error message indicating that the reported GPS
          position differs from the reference by more than the
-         allowed deviation "
+         allowed deviation."
     ::= { rsuNotificationObjects 11 }
 
 rsuGpsNmeaNotifyInterval OBJECT-TYPE
