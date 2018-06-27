@@ -9,12 +9,15 @@ IMPORTS
 
 
 rsuMIB MODULE-IDENTITY
-    LAST-UPDATED    "201805180000Z"
+    LAST-UPDATED    "201806260000Z"
     ORGANIZATION    "US-DOT"
     CONTACT-INFO    "postal:    TBD
                      email:     TBD@TBD.com"
     DESCRIPTION     "Leidos implementation RSU 4.1 MIB based on
                      Savari and Cohda implementation of RSU 4.0"
+    REVISION        "201806260000Z"
+    DESCRIPTION     "Changes to match clarifications in FAQ regarding 
+                     the RSU 4.1 Spec dated March 30, 2018"
     REVISION        "201805180000Z"
     DESCRIPTION     "Contribution from WSP and 7layers to RSU 4.1 MIB
                      Cleanup and expansion of comments to remove ambiguity"
@@ -49,8 +52,8 @@ RsuPsidTC ::= TEXTUAL-CONVENTION
     STATUS         current
     DESCRIPTION
         "PSID associated with a DSRC message.
-        PSID is formatted per IEEE1609.12-2016 Table 2 HEX representation.
-        BSM = 0x20, TIM = 0x83, WSA = 0x87, IProuting = 0x1020407E.
+        PSID is formatted per IEEE1609.12-2016 Table 2 as P-encoded hex values,
+        e.g. BSM = 0x20, TIM = 0x8003, WSA = 0x8007, IProuting = 0xEFFFFFFF.
         For those PSIDs less than 4 octets in length, The RSU should only 
         require the significant octets be provided. For example, if the desired
         PSID is 0x20, then the RSU should accept a supplied value of 0x20.
@@ -229,7 +232,10 @@ rsuIFMStatusTable OBJECT-TYPE
     STATUS      current
     DESCRIPTION
         "Provides configuration parameters for each Immediate
-         Forward message sent by an RSU."
+         Forward message sent by an RSU. Only the IFMs sent to the 
+         appropriate port that match those preconfigured in
+         rsuIFMStatusTable via SNMP will be forwarded. All others 
+         will be ignored."
     ::= { rsuMIB 5 }
 
 rsuIFMStatusEntry OBJECT-TYPE
@@ -316,11 +322,12 @@ rsuSysObjectID OBJECT-TYPE
     STATUS       current
     DESCRIPTION
        "The vendor's authoritative identification of the network
-        management subsystem contained in the entity. This value
-        is allocated within the DSRC subtree (1.0.15628.4) and
+        management subsystem contained in the entity. This OID
+        is allocated within the DSRC subtree (1.0.15628.4.1) and
         provides an easy and unambiguous means for determining
-        'what kind of box' is being managed. Presence of 1.0.15628.4.1.6.0
-        indicates an RSU"
+        'what kind of box' is being managed. Presence of rsuSysObjectID.0
+        indicates an RSU. The returned value may be a starting OID 
+        pointing to the vendor-specific MIB subtree."
     ::= { rsuMIB 6 }
 
 rsuDsrcForwardTable OBJECT-TYPE
@@ -495,7 +502,7 @@ rsuGpsOutputString OBJECT-TYPE
     MAX-ACCESS   read-only
     STATUS       current
     DESCRIPTION
-        "Contains GPS NMEA GPGGA output string"
+        "Contains GPS NMEA GPGGA output string."
     ::= { rsuGpsOutput 5 }
 
 rsuGpsRefLat OBJECT-TYPE
@@ -631,12 +638,12 @@ rsuSecCredAttachInterval OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS current
     DESCRIPTION
-        "Provides configuration parameters for when an RSU will attach
-         1609.2 security credentials to a WAVE Short Message Protocol
-         (WSMP) Message"
+        "Provides configuration parameters for the number of packets when 
+         an RSU will attach 1609.2 security credentials to a WAVE Short Message Protocol
+         (WSMP) Messages. E.g. if it is set to 20, then every 20th WSMP message should 
+         have a cert attached. 0 indicates that no messages are signed, but are still 
+         transmitted with Ieee1609dot2 wrapper."
     ::= { rsuMIB 11 }
--- DK units are undefined
--- DK the value is determined by security profile and varies by the type of WSMP messages
 
 rsuDsrcChannelModeTable OBJECT-TYPE
     SYNTAX SEQUENCE OF RsuDsrcChannelModeEntry
@@ -763,7 +770,7 @@ rsuWsaPriority OBJECT-TYPE
     ::= { rsuWsaServiceEntry 3 }
 
 rsuWsaProviderContext OBJECT-TYPE
-    SYNTAX       OCTET STRING (SIZE (32))
+    SYNTAX       OCTET STRING (SIZE (0..32))
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
@@ -820,7 +827,7 @@ rsuWraIpPrefixLength OBJECT-TYPE
     DESCRIPTION
         "Length of IPv6 address prefix of WRA Service Advertised.
          A 64-bit prefix is '0x40', a 60-bit prefix is '0x3c' and a
-         54-bit prefix is '0x34'"
+         52-bit prefix is '0x34'"
     ::= { rsuWraConfiguration 2 }
 
 rsuWraGateway OBJECT-TYPE
@@ -948,7 +955,7 @@ rsuMessageCountsByPsidIndex OBJECT-TYPE
 
 rsuMessageCountsByPsidId OBJECT-TYPE
     SYNTAX       RsuPsidTC
-    MAX-ACCESS   read-only
+    MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
         "Contains the PSID for this row of message counts."
@@ -956,7 +963,7 @@ rsuMessageCountsByPsidId OBJECT-TYPE
 
 rsuMessageCountsByPsidCounts OBJECT-TYPE
     SYNTAX       Counter32
-    MAX-ACCESS   read-only
+    MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
         "Contains the number of messages sent or received for this PSID"
@@ -964,11 +971,12 @@ rsuMessageCountsByPsidCounts OBJECT-TYPE
 
 rsuMessageCountsByPsidRowStatus OBJECT-TYPE
     SYNTAX       RowStatus
-    MAX-ACCESS   read-only
+    MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "Returns the current status of this row.
-         Active = 1, notInService = 2, notReady = 3"
+        "RowStatus as defined in RFC2579 with minimum support
+         for active = 1, notInService = 2, notReady = 3,
+         createAndGo = 4 or destroy = 6"
     ::= { rsuMessageCountsByPsidEntry 4 }
 
 rsuSystemStats OBJECT IDENTIFIER ::= { rsuMIB 16 }
@@ -1082,7 +1090,11 @@ rsuTxPower OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "Sets the actual output power of the RSU antennas as a
-         percentage of full power supported by this RSU."
+         percentage of full power supported by this RSU.
+         rsuTxPower can be considered a default transmit power 
+         level to be used if a power level is not defined by 
+         an application. The power level defined by the application 
+         would take precedence."
     ::= { rsuSysSettings 1 }
 
 rsuNotifyIpAddress OBJECT-TYPE
@@ -1220,7 +1232,7 @@ rsuSetRole OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "The role of the RSU in a set (master or slave)"
+        "The role of the RSU in a set (master = 0 or slave = 1)"
     ::= { rsuSet 1 }
 
 rsuSetEnable OBJECT-TYPE
@@ -1286,7 +1298,9 @@ rsuMode OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "Specifies the current mode of operation of the RSU."
+        "Specifies the current mode of operation of the RSU and 
+        provides capability to transition the device into a new mode, 
+        e.g. from the current mode to off, etc."
     ::= { rsuMIB 99 }
 -- Asynchronous Messages
 
@@ -1348,7 +1362,7 @@ rsuTimeSourceLost NOTIFICATION-TYPE
     STATUS       current
     DESCRIPTION
         "The SNMP agent should report to the SNMP manager that a
-         time source was lost."
+         time source was lost after vendor-defined timeout interval."
     ::= { rsuNotifications 7 }
 
 rsuClockSkewError NOTIFICATION-TYPE
@@ -1388,7 +1402,8 @@ rsuGpsNmeaNotify NOTIFICATION-TYPE
     STATUS       current
     DESCRIPTION
         "The SNMP agent should report the NMEA string to the SNMP manager
-         at the configured interval."
+         at the configured interval. This object is used in conjunction with 
+         the Notification Object provided by rsuGpsOutputString."
     ::= { rsuNotifications 12 }
 
 rsuNotificationObjects OBJECT IDENTIFIER ::= { rsuAsync 1 }
@@ -1498,9 +1513,9 @@ rsuGpsNmeaNotifyInterval OBJECT-TYPE
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
-        "Sets the repeat interval in seconds for the Notification
-         containing the GPS NMEA GPGGA string.
-         Default is 0 (disabled)."
+        "Sets the repeat interval in seconds for the snmp notifications 
+        (i.e. traps) containing the GPS NMEA GPGGA string. 
+        Default is 0 (disabled)."
     ::= { rsuNotificationObjects 12 }
 
 rsuAlertLevel OBJECT-TYPE
