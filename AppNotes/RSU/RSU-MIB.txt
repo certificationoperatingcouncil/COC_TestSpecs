@@ -770,11 +770,12 @@ rsuWsaPriority OBJECT-TYPE
     ::= { rsuWsaServiceEntry 3 }
 
 rsuWsaProviderContext OBJECT-TYPE
-    SYNTAX       OCTET STRING (SIZE (0..32))
+    SYNTAX       OCTET STRING (SIZE (0..31))
     MAX-ACCESS   read-create
     STATUS       current
     DESCRIPTION
-        "WSA Service Specific Provider Context"
+        "WSA Service Specific Provider Context 1-31 Octets, size(0) 
+        to omit it from WSA"
     ::= { rsuWsaServiceEntry 4 }
 
 rsuWsaIpAddress OBJECT-TYPE
@@ -821,7 +822,6 @@ rsuWraIpPrefix OBJECT-TYPE
 
 rsuWraIpPrefixLength OBJECT-TYPE
     SYNTAX       OCTET STRING (SIZE(1))
-    DISPLAY-HINT "1x"
     MAX-ACCESS   read-write
     STATUS       current
     DESCRIPTION
