@@ -53,7 +53,7 @@ RsuPsidTC ::= TEXTUAL-CONVENTION
     DESCRIPTION
         "PSID associated with a DSRC message.
         PSID is formatted per IEEE1609.12-2016 Table 2 as P-encoded hex values,
-        e.g. BSM = 0x20, TIM = 0x8003, WSA = 0x8007, IProuting = 0xEFFFFFFF.
+        e.g. BSM = 0x20, TIM = 0x8003, WSA = 0x8007, IProuting = 0xEFFFFFFE.
         For those PSIDs less than 4 octets in length, The RSU should only 
         require the significant octets be provided. For example, if the desired
         PSID is 0x20, then the RSU should accept a supplied value of 0x20.
@@ -232,10 +232,10 @@ rsuIFMStatusTable OBJECT-TYPE
     STATUS      current
     DESCRIPTION
         "Provides configuration parameters for each Immediate
-         Forward message sent by an RSU. Only the IFMs sent to the 
+         Forward message sent by an RSU. Only IFMs sent to the 
          appropriate port that match those preconfigured in
          rsuIFMStatusTable via SNMP will be forwarded. All others 
-         will be ignored."
+         will be ignored. IFM messages must be encoded per Appendix C."
     ::= { rsuMIB 5 }
 
 rsuIFMStatusEntry OBJECT-TYPE
@@ -641,8 +641,7 @@ rsuSecCredAttachInterval OBJECT-TYPE
         "Provides configuration parameters for the number of packets when 
          an RSU will attach 1609.2 security credentials to a WAVE Short Message Protocol
          (WSMP) Messages. E.g. if it is set to 20, then every 20th WSMP message should 
-         have a cert attached. 0 indicates that no messages are signed, but are still 
-         transmitted with Ieee1609dot2 wrapper."
+         have a cert attached."
     ::= { rsuMIB 11 }
 
 rsuDsrcChannelModeTable OBJECT-TYPE
@@ -695,7 +694,8 @@ rsuDCMMode OBJECT-TYPE
     STATUS       current
     DESCRIPTION
         "DSRC Channel Mode. Continuous Mode(0), Alternating Mode (1)
-        For Continous Mode, specify Channel number in rsuDCMCCH."
+        For Continous Mode, specify the same Channel number in rsuDCMCCH
+        and rsuDCMSCH."
     ::= { rsuDsrcChannelModeEntry 3 }
 
 rsuDCMCCH OBJECT-TYPE
@@ -1029,7 +1029,7 @@ rsuLastRestartTime OBJECT-TYPE
     MAX-ACCESS   read-only
     STATUS       current
     DESCRIPTION
-        "Contains the Date/Time when the RSU was last restarted."
+        "Contains the Date and Time when the RSU was last restarted."
     ::= { rsuSystemStats 6 }
 
 rsuIntTemp OBJECT-TYPE
