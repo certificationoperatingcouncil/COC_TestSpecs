@@ -9,12 +9,17 @@ IMPORTS
 
 
 rsuMIB MODULE-IDENTITY
-    LAST-UPDATED    "201806260000Z"
-    ORGANIZATION    "US-DOT"
-    CONTACT-INFO    "postal:    TBD
-                     email:     TBD@TBD.com"
-    DESCRIPTION     "Leidos implementation RSU 4.1 MIB based on
-                     Savari and Cohda implementation of RSU 4.0"
+    LAST-UPDATED    "201812060000Z" -- Midnight Dec 6, 2018
+    ORGANIZATION    "OmniAir Technical Working Group"
+    CONTACT-INFO    "Chair:     Dmitri Khijniak
+                     email:     info@omniair.org
+                     Location:
+    https://github.com/certificationoperatingcouncil/COC_TestSpecs/blob/inreview/AppNotes/RSU/RSU-MIB.txt"
+    DESCRIPTION     "Updated RSU 4.1 MIB for OmniAir RSU certification"
+    
+    REVISION        "201812060000Z"
+    DESCRIPTION     "Updated comments for rsuAltMacAddress, rsuMibVersion.
+                     rsuMessageCountsByPsidCounts changed to read-only"
     REVISION        "201806260000Z"
     DESCRIPTION     "Changes to match clarifications in FAQ regarding 
                      the RSU 4.1 Spec dated March 30, 2018"
@@ -66,10 +71,11 @@ rsuContMacAddress OBJECT-TYPE
     STATUS      current
     DESCRIPTION
         "Represents an 802 MAC address of the DSRC Radio operating in
-         Continuous Mode represented in the 'canonical' order defined by
+         Continuous Mode. 
+         MAC is represented in the 'canonical' order defined by
          IEEE 802.1a, i.e., as if it were transmitted least significant
          bit first, even though 802.5 (in contrast to other 802.x protocols)
-         requires MAC addresses to be transmitted most significant bit first"
+         requires MAC addresses to be transmitted most significant bit first."
     ::= { rsuMIB 1 }
 -- add entries for multiple antennas
 
@@ -79,10 +85,13 @@ rsuAltMacAddress OBJECT-TYPE
     STATUS      current
     DESCRIPTION
         "Represents an 802 MAC address of the DSRC Radio operating in
-         Alternating Mode represented in the 'canonical' order defined
+         Alternating Mode. If DSRC Radio operating in Alternating Mode uses 
+         two separate MAC addresses for the Control and Service channels, 
+         this entry contains the MAC address used for the Control channel.
+         MAC is represented in the 'canonical' order defined
          by IEEE 802.1a, i.e., as if it were transmitted least significant
          bit first, even though 802.5 (in contrast to other 802.x protocols)
-         requires MAC addresses to be transmitted most significant bit first"
+         requires MAC addresses to be transmitted most significant bit first."
     ::= { rsuMIB 2 }
 
 rsuGpsStatus OBJECT-TYPE
@@ -829,6 +838,7 @@ rsuWraIpPrefixLength OBJECT-TYPE
          A 64-bit prefix is '0x40', a 60-bit prefix is '0x3c' and a
          52-bit prefix is '0x34'"
     ::= { rsuWraConfiguration 2 }
+-- DK make it integer
 
 rsuWraGateway OBJECT-TYPE
     SYNTAX       Ipv6Address
@@ -926,7 +936,10 @@ rsuMessageCountsByPsidTable OBJECT-TYPE
     STATUS      current
     DESCRIPTION
         "Provides a count of transmitted messages sorted by PSID.
-         Each row is a different PSID."
+         Each row is a different PSID. The rows can be created by
+         the agent automatically based PSIDs used in detected messages.
+         Also, user can create or delete rows to tailor the list of 
+         monitored PSIDs."
     ::= { rsuMessageStats 9 }
 
 rsuMessageCountsByPsidEntry OBJECT-TYPE
@@ -963,7 +976,7 @@ rsuMessageCountsByPsidId OBJECT-TYPE
 
 rsuMessageCountsByPsidCounts OBJECT-TYPE
     SYNTAX       Counter32
-    MAX-ACCESS   read-create
+    MAX-ACCESS   read-only
     STATUS       current
     DESCRIPTION
         "Contains the number of messages sent or received for this PSID"
@@ -1047,7 +1060,8 @@ rsuMibVersion OBJECT-TYPE
     MAX-ACCESS   read-only
     STATUS       current
     DESCRIPTION
-        "Contains the version of this MIB supported by this RSU."
+        "Contains the version of this MIB supported by this RSU, 
+        e.g. rsuMIB 4.1 rev201812060000Z"
     ::= { rsuSysDescription 1 }
 
 rsuFirmwareVersion OBJECT-TYPE
@@ -1309,6 +1323,7 @@ rsuAsync OBJECT IDENTIFIER ::= { rsuMIB 100 }
 
 rsuNotifications OBJECT IDENTIFIER ::= { rsuAsync 0 }
 messageFileIntegrityError NOTIFICATION-TYPE
+-- should start with rsu DK
     OBJECTS      { rsuAlertLevel, rsuMsgFileIntegrityMsg }
     STATUS       current
     DESCRIPTION
