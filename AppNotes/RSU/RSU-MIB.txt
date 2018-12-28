@@ -14,7 +14,7 @@ rsuMIB MODULE-IDENTITY
     CONTACT-INFO    "Chair:     Dmitri Khijniak
                      email:     info@omniair.org
                      Location:
-    https://github.com/certificationoperatingcouncil/COC_TestSpecs/blob/inreview/AppNotes/RSU/RSU-MIB.txt"
+    https://github.com/certificationoperatingcouncil/COC_TestSpecs/blob/master/AppNotes/RSU/RSU-MIB.txt"
     DESCRIPTION     "Updated RSU 4.1 MIB for OmniAir RSU certification"
     
     REVISION        "201812060000Z"
