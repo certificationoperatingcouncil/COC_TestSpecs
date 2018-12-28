@@ -1,3 +1,8 @@
+## Update 20181228
+**RSU-MIB**
+__RSU-MIB.txt__ updated with changes from inreview branch merged into master branch. 
+Current RSU-MIB version is rsuMIB 4.1 201812060000Z.
+This MIB file superseed MIB included in RSU 4.1 ver 5.
 
 ## Update 20171010
 **RSU Requirements**
