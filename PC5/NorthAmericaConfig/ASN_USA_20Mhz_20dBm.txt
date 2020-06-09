@@ -1,0 +1,197 @@
+rec1value SL-V2X-Preconfiguration-r14 ::= {
+  v2x-PreconfigFreqList-r14 {
+    {
+      v2x-CommPreconfigGeneral-r14 {
+        rohc-Profiles-r12 {
+          profile0x0001-r12 FALSE,
+          profile0x0002-r12 FALSE,
+          profile0x0004-r12 FALSE,
+          profile0x0006-r12 FALSE,
+          profile0x0101-r12 FALSE,
+          profile0x0102-r12 FALSE,
+          profile0x0104-r12 FALSE
+        },
+        carrierFreq-r12 55140,
+        maxTxPower-r12 20,
+        additionalSpectrumEmission-r12 32,
+        sl-bandwidth-r12 n100,
+        tdd-ConfigSL-r12 {
+          subframeAssignmentSL-r12 none
+        },
+        reserved-r12 '0000000000000000000'B
+      },
+      v2x-CommRxPoolList-r14 {
+        {
+          sl-Subframe-r14 bs20-r14 : '11111111111111111111'B,
+          adjacencyPSCCH-PSSCH-r14 TRUE,
+          sizeSubchannel-r14 n10,
+          numSubchannel-r14 n10,
+          startRB-Subchannel-r14 0,
+          dataTxParameters-r14 23
+        }
+      },
+      v2x-CommTxPoolList-r14 {
+        {
+          sl-Subframe-r14 bs20-r14 : '11111111111111111111'B,
+          adjacencyPSCCH-PSSCH-r14 TRUE,
+          sizeSubchannel-r14 n10,
+          numSubchannel-r14 n10,
+          startRB-Subchannel-r14 0,
+          dataTxParameters-r14 23,
+          threshS-RSSI-CBR-r14 9,
+          cbr-pssch-TxConfigList-r14 {
+            {
+              priorityThreshold-r14 8,
+              defaultTxConfigIndex-r14 1,
+              cbr-ConfigIndex-r14 0,
+              tx-ConfigIndexList-r14 {
+                0,
+                1
+              }
+            }
+          },
+          syncAllowed-r14 {
+            gnss-Sync-r14 true
+          }
+        }
+      },
+      p2x-CommTxPoolList-r14 {
+        {
+          sl-Subframe-r14 bs10-r14 : '0000000000'B,
+          adjacencyPSCCH-PSSCH-r14 FALSE,
+          sizeSubchannel-r14 n4,
+          numSubchannel-r14 n1,
+          startRB-Subchannel-r14 0,
+          dataTxParameters-r14 -126
+        }
+      },
+      v2x-ResourceSelectionConfig-r14 {
+        pssch-TxConfigList-r14 {
+          {
+            typeTxSync-r14 gnss,
+            thresUE-Speed-r14 kmph120,
+            parametersAboveThres-r14 {
+              minMCS-PSSCH-r14 0,
+              maxMCS-PSSCH-r14 7,
+              minSubChannel-NumberPSSCH-r14 1,
+              maxSubchannel-NumberPSSCH-r14 10,
+              allowedRetxNumberPSSCH-r14 n1
+            },
+            parametersBelowThres-r14 {
+              minMCS-PSSCH-r14 5,
+              maxMCS-PSSCH-r14 11,
+              minSubChannel-NumberPSSCH-r14 1,
+              maxSubchannel-NumberPSSCH-r14 10,
+              allowedRetxNumberPSSCH-r14 n1
+            }
+          }
+        },
+        thresPSSCH-RSRP-List-r14 {
+          2,
+          2,
+          11,
+          11,
+          11,
+          11,
+          11,
+          11,
+          2,
+          2,
+          11,
+          11,
+          11,
+          11,
+          11,
+          11,
+          2,
+          2,
+          11,
+          11,
+          11,
+          11,
+          11,
+          11,
+          2,
+          2,
+          11,
+          11,
+          11,
+          11,
+          11,
+          11,
+          2,
+          2,
+          11,
+          11,
+          11,
+          11,
+          11,
+          11,
+          2,
+          2,
+          11,
+          11,
+          11,
+          11,
+          11,
+          11,
+          2,
+          2,
+          11,
+          11,
+          11,
+          11,
+          11,
+          11,
+          2,
+          2,
+          11,
+          11,
+          11,
+          11,
+          11,
+          11
+        },
+        restrictResourceReservationPeriod-r14 {
+          v1
+        },
+        probResourceKeep-r14 v0dot8,
+        sl-ReselectAfter-r14 n6
+      },
+      syncPriority-r14 gnss,
+      offsetDFN-r14 0
+    }
+  },
+  cbr-PreconfigList-r14 {
+    cbr-RangeCommonConfigList-r14 {
+      {
+        65,
+        100
+      }
+    },
+    sl-CBR-PSSCH-TxConfigList-r14 {
+      {
+        cr-Limit-r14 10000,
+        tx-Parameters-r14 {
+          minMCS-PSSCH-r14 0,
+          maxMCS-PSSCH-r14 28,
+          minSubChannel-NumberPSSCH-r14 1,
+          maxSubchannel-NumberPSSCH-r14 10,
+          allowedRetxNumberPSSCH-r14 n1,
+          maxTxPower-r14 txPower-r14 : 20
+        }
+      },
+      {
+        cr-Limit-r14 400,
+        tx-Parameters-r14 {
+          minMCS-PSSCH-r14 0,
+          maxMCS-PSSCH-r14 28,
+          minSubChannel-NumberPSSCH-r14 1,
+          maxSubchannel-NumberPSSCH-r14 10,
+          allowedRetxNumberPSSCH-r14 n1,
+          maxTxPower-r14 txPower-r14 : 20
+        }
+      }
+    }
+  }
+}
